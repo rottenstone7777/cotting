@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotting School — District Intelligence &amp; SpEd Lifecycle</title>
+<style>
+:root {
+  --tp: #111318; --ts: #4a4f62; --tt: #8a8fa4;
+  --bp: rgba(0,0,0,0.14); --bs: rgba(0,0,0,0.09); --bt: rgba(0,0,0,0.06);
+  --bgp: #ffffff; --bgs: #f5f6f9; --bgt: #eef0f5;
+  --pid-bg:#EEEDFE; --pid-t:#26215C; --pid-n:#3C3489;
+  --ptr-bg:#FAEEDA; --ptr-t:#412402; --ptr-n:#7A3D08;
+  --pod-bg:#E1F5EE; --pod-t:#04342C; --pod-n:#085041;
+  --cot-bg:#FAECE7; --cot-t:#4A1B0C; --cot-b:#F5C4B3;
+}
+@media(prefers-color-scheme:dark){:root{
+  --tp:#e8eaf0;--ts:#9ba0b8;--tt:#5c6278;
+  --bp:rgba(255,255,255,0.12);--bs:rgba(255,255,255,0.08);--bt:rgba(255,255,255,0.05);
+  --bgp:#0d0f14;--bgs:#13161e;--bgt:#1a1e28;
+  --pid-bg:#1e1b3a;--pid-t:#CECBF6;--pid-n:#9C97F0;
+  --ptr-bg:#2a1a06;--ptr-t:#FAC775;--ptr-n:#E8A040;
+  --pod-bg:#0a201a;--pod-t:#9FE1CB;--pod-n:#4DBFA0;
+  --cot-bg:#2a1008;--cot-t:#FAECE7;--cot-b:#7A3020;
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bgp);color:var(--tp);font-size:13px;line-height:1.6}
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--bp);background:var(--bgs);padding:0 1rem;position:sticky;top:0;z-index:100}
+.tbtn{background:none;border:none;font-family:monospace;font-size:11px;font-weight:500;color:var(--tt);padding:.8rem 1rem .7rem;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;letter-spacing:.04em;text-transform:uppercase;transition:color .15s}
+.tbtn:hover{color:var(--ts)}
+.tbtn.active{color:var(--tp);border-bottom-color:var(--tp)}
+.panel{display:none}
+.panel.active{display:block}
+/* DASHBOARD */
+.dw{padding:1rem 0.75rem 2rem}
+.info{font-size:12px;color:var(--ts);margin-bottom:10px;padding:8px 10px;background:var(--bgs);border-radius:8px;border-left:3px solid #378ADD;line-height:1.6}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.ctrl input,.ctrl select{font-size:11px;padding:4px 8px;border:.5px solid var(--bp);border-radius:6px;background:var(--bgp);color:var(--tp)}
+.ctrl input{flex:1;min-width:140px}
+.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:10px}
+.kpi{background:var(--bgs);border-radius:8px;padding:8px 10px}
+.kl{font-size:10px;color:var(--tt);margin-bottom:2px;font-family:monospace;text-transform:uppercase;letter-spacing:.04em}
+.kv{font-size:18px;font-weight:500}
+.lgd{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;font-size:10px;font-family:monospace}
+.lt{padding:2px 8px;border-radius:4px;white-space:nowrap}
+th{font-size:11px;color:var(--tp);font-weight:600;font-family:monospace;text-transform:none;letter-spacing:.01em;padding:7px 8px;border-bottom:1.5px solid var(--bp);text-align:left;background:var(--bgp);position:sticky;top:0;z-index:10;cursor:pointer;user-select:none;white-space:normal;line-height:1.3;vertical-align:bottom}
+thead{position:sticky;top:0;z-index:10;background:var(--bgp)}
+.tw{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 260px);width:100%}
+table{width:100%;border-collapse:collapse;font-size:11px;border-spacing:0}
+th:hover{color:var(--tp);background:var(--bgt)}th.sorted{color:var(--tp);background:var(--bgt);border-bottom-color:#378ADD}
+th.ga{border-top:2px solid #378ADD}
+th.gb{border-top:2px solid #1D9E75}
+th.gc{border-top:2px solid #7F77DD}
+th.gd{border-top:2px solid #D85A30}
+td{padding:4px 5px;border-bottom:.5px solid var(--bt);vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+tr:hover td{background:var(--bgs)}
+.sep{border-left:.5px solid var(--bs)!important}
+.fr{background:#FCEBEB;color:#A32D2D;border-radius:4px;padding:1px 5px}
+.fa{background:#FAEEDA;color:#633806;border-radius:4px;padding:1px 5px}
+.fg{background:#EAF3DE;color:#27500A;border-radius:4px;padding:1px 5px}
+.fp{background:#EEEDFE;color:#3C3489;border-radius:4px;padding:1px 5px}
+.fc{background:#E1F5EE;color:#085041;border-radius:4px;padding:1px 5px}
+.fca{background:#E6F1FB;color:#0C447C;border-radius:4px;padding:1px 5px;font-weight:500}
+.fgp{background:#FAEEDA;color:#633806;border-radius:4px;padding:1px 5px;font-size:10px}
+.nt{font-size:10px;color:var(--tt);margin-top:10px;line-height:1.6;border-top:.5px solid var(--bt);padding-top:8px}
+/* LIFECYCLE */
+.lw{max-width:760px;margin:0 auto;padding:1.5rem 1rem 3rem}
+.llg{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:1.5rem;padding:.6rem 1rem;background:var(--bgs);border-radius:8px;border:.5px solid var(--bs)}
+.lli{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ts);font-family:monospace}
+.lsw{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.lct{margin-left:auto;background:var(--cot-bg);color:var(--cot-t);border:.5px solid var(--cot-b);border-radius:4px;padding:3px 10px;font-size:10px;font-family:monospace;font-weight:500}
+.card{display:flex;border-radius:12px;border:.5px solid var(--bs);overflow:hidden;margin-bottom:10px;background:var(--bgp)}
+.card.loop{border-style:dashed;border-width:1.5px}
+.num-col{width:72px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem .5rem;gap:2px}
+.num-col .nb{font-family:Georgia,serif;font-size:2rem;font-weight:700;line-height:1}
+.num-col .nl{font-family:monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.pi .num-col{background:var(--pid-bg);color:var(--pid-t)}
+.pi .num-col .nb{color:var(--pid-n)}
+.pt .num-col{background:var(--ptr-bg);color:var(--ptr-t)}
+.pt .num-col .nb{color:var(--ptr-n)}
+.po .num-col{background:var(--pod-bg);color:var(--pod-t)}
+.po .num-col .nb{color:var(--pod-n)}
+.cbody{flex:1;padding:.85rem 1rem;min-width:0}
+.chdr{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.ctitle{font-size:13px;font-weight:500;color:var(--tp);line-height:1.3}
+.cpill{flex-shrink:0;font-family:monospace;font-size:10px;color:var(--tt);background:var(--bgt);border:.5px solid var(--bs);border-radius:99px;padding:2px 9px;white-space:nowrap}
+.cdesc{font-size:12px;color:var(--ts);margin-bottom:8px;line-height:1.6}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+.ml{font-family:monospace;font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--tt);margin-bottom:1px}
+.mv{font-size:11px;color:var(--ts);line-height:1.5}
+.cr{margin-top:8px;padding-top:8px;border-top:.5px dashed var(--bp)}
+.ctg{display:inline-block;background:var(--cot-bg);color:var(--cot-t);border:.5px solid var(--cot-b);border-radius:4px;padding:2px 8px;font-family:monospace;font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:500;margin-bottom:4px}
+.cd{font-size:11px;color:var(--ts);line-height:1.55}
+.sum{margin-top:1.5rem;padding:1rem 1.25rem;border:.5px solid var(--bs);border-radius:12px;background:var(--bgs)}
+.sum h3{font-size:13px;font-weight:700;color:var(--tp);margin-bottom:6px}
+.sum p{font-size:12px;color:var(--ts);line-height:1.7}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:520px){.mg{grid-template-columns:1fr}.num-col{width:56px}.num-col .nb{font-size:1.6rem}}
+
+th[onclick]{cursor:pointer}
+th[onclick]:hover{background:var(--bgt);color:var(--tp)}
+th[title]:not([onclick]){cursor:default}
+.th-tip{display:block;font-size:9px;color:var(--tt);font-weight:400;margin-top:2px;text-transform:none;letter-spacing:0;font-family:system-ui,sans-serif}
+
+.prov-cell{min-width:180px;max-width:280px}
+.prov-chips{display:flex;flex-wrap:wrap;gap:3px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:99px;white-space:nowrap;border:.5px solid transparent}
+.chip-collab{background:#EBF4FF;color:#1A5FAF;border-color:#B8D4F5}
+.chip-private{background:#FAECE7;color:#7A2D10;border-color:#F0C4A8}
+.chip-cotting{background:#EEEDFE;color:#26215C;border-color:#C4BFF5;font-weight:600}
+.chip-public{background:#EAF3DE;color:#27500A;border-color:#B8D88C}
+.chip-n{background:rgba(0,0,0,0.08);border-radius:99px;padding:0 5px;font-weight:600;font-size:9px}
+tr.expanded .prov-cell .prov-chips{flex-direction:column}
+tr.expanded .chip{border-radius:6px;padding:3px 8px}
+.prov-toggle{font-size:9px;color:var(--tt);cursor:pointer;margin-top:3px;font-family:monospace;text-decoration:underline;text-underline-offset:2px}
+
+/* ── OPPORTUNITY TAB ── */
+.opwrap{padding:0 0 4rem}
+.op-hero{background:var(--bgs);border-bottom:.5px solid var(--bp);padding:2.5rem 2rem 2rem}
+.op-hero-inner{max-width:820px}
+.op-eyebrow{font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--tt);margin-bottom:.75rem}
+.op-h1{font-family:Georgia,serif;font-size:1.8rem;font-weight:400;line-height:1.3;color:var(--tp);margin-bottom:1rem;max-width:700px}
+.op-h1 em{font-style:italic;color:#3C3489}
+.op-hero-sub{font-size:13px;color:var(--ts);line-height:1.8;max-width:620px}
+.op-grid-3{display:flex;flex-direction:column;gap:0;border-top:none}
+.op-card{border-bottom:.5px solid var(--bp);display:flex;gap:0}
+.op-card-featured{background:linear-gradient(to bottom,rgba(60,52,137,0.03),transparent)}
+@media(prefers-color-scheme:dark){.op-card-featured{background:linear-gradient(to bottom,rgba(156,151,240,0.06),transparent)}}
+.op-card-num{width:72px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:center;padding:2rem .5rem;font-family:Georgia,serif;font-size:2.5rem;font-weight:400;color:var(--bt);line-height:1;user-select:none;border-right:.5px solid var(--bp)}
+.op-card-body{flex:1;padding:2rem;max-width:900px}
+.op-tag{display:inline-block;font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:99px;margin-bottom:.75rem;border:.5px solid transparent}
+.op-tag-blue{background:#EBF4FF;color:#1A5FAF;border-color:#B8D4F5}
+.op-tag-teal{background:#E1F5EE;color:#085041;border-color:#A8DBC9}
+.op-tag-coral{background:#FAECE7;color:#7A2D10;border-color:#F0C4A8}
+.op-h2{font-family:Georgia,serif;font-size:1.2rem;font-weight:400;color:var(--tp);margin-bottom:.75rem;line-height:1.3}
+.op-desc{font-size:13px;color:var(--ts);line-height:1.8;margin-bottom:1.25rem;max-width:720px}
+.op-metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--bp);border-radius:10px;overflow:hidden;margin-bottom:1.5rem;border:.5px solid var(--bp)}
+.op-metric{background:var(--bgs);padding:.85rem 1rem}
+.op-metric-val{font-family:Georgia,serif;font-size:1.6rem;font-weight:400;color:var(--tp);margin-bottom:4px;line-height:1}
+.op-metric-lbl{font-size:11px;color:var(--tt);line-height:1.5}
+.op-steps{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.25rem}
+.op-step{display:flex;gap:12px;align-items:flex-start}
+.op-step-n{width:22px;height:22px;border-radius:50%;background:var(--bgt);color:var(--ts);font-family:monospace;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.op-step-t{font-size:12px;color:var(--ts);line-height:1.7}
+.op-step-t strong{color:var(--tp);font-weight:500}
+.op-insight{background:var(--bgt);border-radius:8px;padding:.85rem 1rem;margin-top:1rem;border-left:3px solid var(--bp)}
+.op-insight-coral{border-left-color:#E08060}
+.op-insight-label{font-family:monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tt);margin-bottom:5px}
+.op-insight p{font-size:12px;color:var(--ts);line-height:1.7}
+.op-callout{background:var(--bgs);border:.5px solid var(--bp);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.op-callout-head{font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--tt);margin-bottom:6px}
+.op-callout p{font-size:12px;color:var(--ts);line-height:1.75}
+.op-ratio{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.op-ratio-block{border-radius:10px;padding:.85rem 1.25rem;flex:1;min-width:160px;border:.5px solid transparent}
+.op-ratio-cotting{background:#EEEDFE;border-color:#C4BFF5}
+.op-ratio-peer{background:#E1F5EE;border-color:#A8DBC9}
+.op-ratio-n{font-family:Georgia,serif;font-size:2.5rem;font-weight:400;line-height:1;margin-bottom:4px}
+.op-ratio-cotting .op-ratio-n{color:#3C3489}
+.op-ratio-peer .op-ratio-n{color:#085041}
+.op-ratio-label{font-size:12px;font-weight:500;color:var(--tp);margin-bottom:3px}
+.op-ratio-sub{font-size:11px;color:var(--ts);line-height:1.5}
+.op-ratio-plus{font-size:1.8rem;color:var(--tt);flex-shrink:0;align-self:center}
+.op-summary{background:var(--bgs);border-top:.5px solid var(--bp);padding:2rem}
+.op-sum-h{font-family:Georgia,serif;font-size:1.1rem;font-weight:400;color:var(--tp);margin-bottom:1.25rem}
+.op-sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--bp);border-radius:10px;overflow:hidden;border:.5px solid var(--bp)}
+.op-sum-cell{background:var(--bgp);padding:1rem 1.25rem}
+.op-sum-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:.6rem;font-weight:600}
+.op-sum-label{font-size:12px;font-weight:500;color:var(--tp);margin-bottom:5px}
+.op-sum-desc{font-size:11px;color:var(--ts);line-height:1.65}
+@media(max-width:600px){.op-card{flex-direction:column}.op-card-num{width:100%;padding:.75rem 1rem;border-right:none;border-bottom:.5px solid var(--bp);font-size:1.5rem;text-align:left}.op-card-body{padding:1.25rem}.op-h1{font-size:1.3rem}}
+
+/* ── ADDITIONAL SERVICES (Lever 3) ── */
+.op-services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--bp);border-radius:10px;overflow:hidden;border:.5px solid var(--bp);margin-top:1rem}
+.op-service-card{background:var(--bgs);padding:1rem 1.1rem}
+.op-service-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:.6rem}
+.op-service-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:monospace;flex-shrink:0}
+.op-service-title{font-size:12px;font-weight:500;color:var(--tp);margin-bottom:2px}
+.op-service-tag{font-size:10px;color:var(--tt);font-family:monospace}
+.op-service-desc{font-size:11px;color:var(--ts);line-height:1.65;margin-bottom:.75rem}
+.op-fund-row{margin-bottom:.6rem}
+.op-fund-label{font-family:monospace;font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--tt);margin-bottom:4px}
+.op-fund-chips{display:flex;flex-wrap:wrap;gap:4px}
+.op-fund-chip{font-size:10px;padding:2px 8px;border-radius:99px;border:.5px solid transparent;font-family:monospace;white-space:nowrap}
+.op-service-est{font-size:11px;color:var(--ts)}
+.op-service-est strong{color:var(--tp)}
+.op-goto-btn{background:var(--bgt);border:.5px solid var(--bp);color:var(--tp);font-size:10px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:monospace;font-weight:500;white-space:nowrap}
+.op-goto-btn:hover{background:var(--bp)}
+
+/* ── SUMMER BRIDGE TAB ── */
+.sbwrap{padding:0 0 4rem}
+.sb-hero{background:var(--bgs);border-bottom:.5px solid var(--bp);padding:2.5rem 2rem 2rem}
+.sb-hero-inner{max-width:820px}
+.sb-tagline{font-size:13px;color:var(--ts);line-height:1.8;max-width:700px;margin-top:.5rem}
+.sb-section{padding:2rem;border-bottom:.5px solid var(--bp);display:flex;gap:0}
+.sb-section-alt{background:var(--bgs)}
+.sb-section-num{width:72px;flex-shrink:0;font-family:Georgia,serif;font-size:2.5rem;font-weight:400;color:var(--bt);padding:.2rem .5rem 0 0;line-height:1;user-select:none;border-right:.5px solid var(--bp);margin-right:2rem;text-align:right}
+.sb-section-body{flex:1;max-width:860px}
+.sb-ratio-row{display:flex;align-items:center;gap:1.25rem;margin-top:1.25rem;flex-wrap:wrap}
+.sb-ratio-item{flex:1;min-width:200px;border-radius:12px;padding:1rem 1.25rem;border:.5px solid transparent}
+.sb-ratio-cotting{background:var(--pid-bg);border-color:var(--pid-n)}
+.sb-ratio-peer{background:var(--pod-bg);border-color:var(--pod-n)}
+.sb-ratio-n{font-family:Georgia,serif;font-size:2.2rem;font-weight:400;line-height:1;margin-bottom:4px}
+.sb-ratio-cotting .sb-ratio-n{color:var(--pid-n)}
+.sb-ratio-peer .sb-ratio-n{color:var(--pod-n)}
+.sb-ratio-label{font-size:12px;font-weight:500;color:var(--tp);margin-bottom:4px}
+.sb-ratio-sub{font-size:11px;color:var(--ts);line-height:1.55}
+.sb-ratio-connector{display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:4px}
+.sb-ratio-badge{background:var(--tp);color:var(--bgp);font-family:Georgia,serif;font-size:1.1rem;padding:6px 12px;border-radius:99px}
+.sb-ratio-desc{font-size:10px;color:var(--tt);font-family:monospace}
+.sb-insight-row{display:flex;gap:1.25rem;margin-top:1rem;flex-wrap:wrap}
+.sb-insight-card{flex:0 0 260px;background:var(--pid-bg);border:.5px solid var(--pid-n);border-radius:12px;padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between}
+.sb-insight-q{font-family:Georgia,serif;font-size:1rem;font-style:italic;color:var(--pid-n);line-height:1.6;margin-bottom:.75rem}
+.sb-insight-attr{font-size:10px;color:var(--tt);font-family:monospace;line-height:1.5}
+.sb-why-list{flex:1;display:flex;flex-direction:column;gap:.6rem}
+.sb-why-item{display:flex;gap:10px;align-items:flex-start}
+.sb-why-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.sb-why-text{font-size:12px;color:var(--ts);line-height:1.65}
+.sb-why-text strong{color:var(--tp);font-weight:500}
+.sb-activity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--bp);border-radius:10px;overflow:hidden;border:.5px solid var(--bp);margin-top:1rem}
+.sb-activity{background:var(--bgp);padding:.9rem 1rem}
+.sb-activity-label{font-size:12px;font-weight:500;color:var(--tp);margin-bottom:4px}
+.sb-activity-desc{font-size:11px;color:var(--ts);line-height:1.6}
+.sb-staff-table{border:.5px solid var(--bp);border-radius:10px;overflow:hidden;margin-top:1rem;font-size:11px}
+.sb-staff-row{display:grid;grid-template-columns:2fr 0.6fr 1.5fr 1.2fr;border-bottom:.5px solid var(--bt)}
+.sb-staff-row:last-child{border-bottom:none}
+.sb-staff-header{background:var(--bgt);font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--tt)}
+.sb-staff-row > div{padding:7px 10px;color:var(--ts)}
+.sb-staff-header > div{color:var(--tt)}
+.sb-staff-total{background:var(--bgs);font-weight:500}
+.sb-staff-total > div{color:var(--tp)}
+.sb-fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bp);border-radius:10px;overflow:hidden;border:.5px solid var(--bp);margin-top:1rem}
+.sb-fin-block{background:var(--bgs);padding:1rem 1.1rem}
+.sb-fin-head{font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--tt);margin-bottom:.6rem;padding-bottom:6px;border-bottom:.5px solid var(--bp)}
+.sb-fin-revenue .sb-fin-head{color:#1A5FAF}
+.sb-fin-expense .sb-fin-head{color:#7A2D10}
+.sb-fin-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:.5px solid var(--bt);font-size:11px;color:var(--ts);gap:8px}
+.sb-fin-row:last-child{border-bottom:none}
+.sb-fin-sub{opacity:.8}
+.sb-fin-indent{padding-left:12px;font-size:10px}
+.sb-fin-num{font-family:monospace;font-size:11px;color:var(--tp);white-space:nowrap}
+.sb-fin-total{font-weight:600;border-top:.5px solid var(--bp)!important}
+.sb-fin-total .sb-fin-num{color:var(--tp);font-size:12px}
+.sb-fin-surplus{background:var(--pod-bg);border:.5px solid var(--pod-n);border-radius:10px;padding:1rem 1.25rem;margin-top:1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.sb-fin-surplus-label{font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--pod-n)}
+.sb-fin-surplus-val{font-family:Georgia,serif;font-size:2rem;font-weight:400;color:var(--pod-n)}
+.sb-fin-surplus-sub{font-size:11px;color:var(--ts);line-height:1.55;flex:1;min-width:180px}
+.sb-fin-sources{margin-top:1rem}
+.sb-fin-sources-label{font-family:monospace;font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--tt);margin-bottom:4px}
+.sb-timeline{display:flex;flex-direction:column;gap:0;position:relative;margin-top:1rem;padding-left:28px;border-left:1.5px solid var(--bp)}
+.sb-tl-item{position:relative;padding-bottom:1.5rem;padding-left:1rem}
+.sb-tl-item:last-child{padding-bottom:0}
+.sb-tl-dot{position:absolute;left:-1.75rem;top:4px;width:10px;height:10px;border-radius:50%;background:var(--tp);border:2px solid var(--bgp);box-shadow:0 0 0 1.5px var(--tp)}
+.sb-tl-when{font-family:monospace;font-size:10px;color:var(--tt);margin-bottom:3px;letter-spacing:.03em}
+.sb-tl-title{font-size:12px;font-weight:500;color:var(--tp);margin-bottom:4px}
+.sb-tl-desc{font-size:11px;color:var(--ts);line-height:1.65}
+@media(max-width:600px){
+  .sb-section{flex-direction:column;gap:.75rem}
+  .sb-section-num{width:auto;border-right:none;padding:0;margin-right:0;font-size:1.5rem;border-bottom:.5px solid var(--bp);padding-bottom:.5rem}
+  .sb-fin-grid{grid-template-columns:1fr}
+  .sb-staff-row{grid-template-columns:1fr 1fr}
+  .sb-staff-row > div:nth-child(3){display:none}
+  .sb-insight-card{flex:0 0 100%}
+}
+
+/* ── OVERVIEW CARDS ── */
+.ov-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--bp);border-top:.5px solid var(--bp);border-bottom:.5px solid var(--bp)}
+.ov-card{background:var(--bgp);padding:1.75rem 1.5rem;cursor:pointer;transition:background .15s;display:flex;gap:1rem;align-items:flex-start}
+.ov-card:hover{background:var(--bgs)}
+.ov-card:hover .ov-link{color:var(--tp)}
+.ov-card-num{font-family:Georgia,serif;font-size:2.2rem;font-weight:400;line-height:1;flex-shrink:0;width:52px;text-align:right;padding-top:2px}
+.ov-blue{color:var(--phase-id-num)}
+.ov-teal{color:var(--pod-n)}
+.ov-coral{color:#C05030}
+.ov-card-body{flex:1}
+.ov-h2{font-family:Georgia,serif;font-size:1rem;font-weight:400;color:var(--tp);margin-bottom:.5rem;line-height:1.3}
+.ov-desc{font-size:12px;color:var(--ts);line-height:1.7;margin-bottom:.85rem}
+.ov-desc strong{color:var(--tp);font-weight:500}
+.ov-metrics{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem}
+.ov-metric{display:flex;flex-direction:column;gap:2px;min-width:80px}
+.ov-val{font-family:Georgia,serif;font-size:1.3rem;color:var(--tp)}
+.ov-lbl{font-size:10px;color:var(--tt);line-height:1.4;font-family:monospace}
+.ov-link{font-size:11px;color:var(--tt);font-family:monospace;transition:color .15s}
+
+/* ── TAB NAV: allow wrapping on wide/narrow screens ── */
+.tabs{flex-wrap:wrap;gap:0}
+.tbtn{padding:.7rem .85rem .6rem;font-size:10px}
+
+/* ── LEVER PANELS: clean inner layout without card chrome ── */
+.lever-inner{padding:2rem;max-width:900px}
+
+/* ═══════════════ LEVER PANELS ═══════════════ */
+.lv-wrap{max-width:860px;margin:0 auto;padding:0 0 4rem}
+
+/* header band */
+.lv-header{padding:2rem 2rem 1.75rem;border-bottom:.5px solid var(--bp)}
+.lv-header-blue {background:var(--pid-bg)}
+.lv-header-teal {background:var(--pod-bg)}
+.lv-header-coral{background:var(--cot-bg)}
+.lv-header-meta{font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--tt);margin-bottom:.6rem}
+.lv-title{font-family:Georgia,serif;font-size:1.6rem;font-weight:400;color:var(--tp);line-height:1.25;margin-bottom:.6rem}
+.lv-sub{font-size:13px;color:var(--ts);line-height:1.7;max-width:680px}
+.lv-sub strong{color:var(--tp)}
+
+/* KPI strip */
+.lv-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bp);border-bottom:.5px solid var(--bp)}
+.lv-kpi{background:var(--bgs);padding:.85rem 1.25rem}
+.lv-kpi-val{font-family:Georgia,serif;font-size:1.5rem;font-weight:400;color:var(--tp);line-height:1;margin-bottom:4px}
+.lv-kpi-lbl{font-size:10px;color:var(--tt);line-height:1.45;font-family:monospace}
+
+/* body sections */
+.lv-body{padding:0}
+.lv-section{padding:1.75rem 2rem;border-bottom:.5px solid var(--bp)}
+.lv-section:last-child{border-bottom:none}
+.lv-section-title{font-size:11px;font-family:monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--tt);margin-bottom:.85rem;padding-bottom:.5rem;border-bottom:.5px solid var(--bp)}
+.lv-p{font-size:13px;color:var(--ts);line-height:1.8;margin-bottom:.85rem;max-width:720px}
+.lv-p:last-child{margin-bottom:0}
+
+/* numbered steps */
+.lv-steps{display:flex;flex-direction:column;gap:0;border:.5px solid var(--bp);border-radius:10px;overflow:hidden}
+.lv-step{display:flex;gap:0;border-bottom:.5px solid var(--bp)}
+.lv-step:last-child{border-bottom:none}
+.lv-step-n{width:48px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:center;padding:1.1rem .5rem;font-family:Georgia,serif;font-size:1.3rem;color:var(--tt);border-right:.5px solid var(--bp);background:var(--bgs)}
+.lv-step-body{flex:1;padding:1rem 1.25rem}
+.lv-step-title{font-size:13px;font-weight:500;color:var(--tp);margin-bottom:.4rem;line-height:1.3}
+.lv-step-desc{font-size:12px;color:var(--ts);line-height:1.75}
+
+/* efficiency cards grid */
+.lv-eff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1px;background:var(--bp);border-radius:10px;overflow:hidden;border:.5px solid var(--bp)}
+.lv-eff-card{background:var(--bgp);padding:1.1rem 1.25rem;display:flex;gap:.75rem}
+.lv-eff-num{width:28px;height:28px;border-radius:6px;background:var(--bgt);color:var(--ts);font-family:monospace;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.lv-eff-body{flex:1}
+.lv-eff-title{font-size:13px;font-weight:500;color:var(--tp);margin-bottom:2px}
+.lv-eff-est{font-size:10px;font-family:monospace;color:var(--tt);margin-bottom:.6rem}
+.lv-eff-desc{font-size:12px;color:var(--ts);line-height:1.7}
+
+/* service cards */
+.lv-services{display:flex;flex-direction:column;gap:0;border:.5px solid var(--bp);border-radius:10px;overflow:hidden}
+.lv-service{padding:1.25rem 1.5rem;border-bottom:.5px solid var(--bp)}
+.lv-service:last-child{border-bottom:none}
+.lv-service-featured{background:var(--bgs)}
+.lv-service-header{display:flex;gap:.85rem;align-items:flex-start;margin-bottom:.75rem}
+.lv-service-badge{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:10px;font-weight:700;flex-shrink:0}
+.lv-badge-blue  {background:#EBF4FF;color:#1A5FAF}
+.lv-badge-teal  {background:#E1F5EE;color:#085041}
+.lv-badge-amber {background:#FAEEDA;color:#7A3D08}
+.lv-badge-purple{background:#EEEDFE;color:#3C3489}
+.lv-service-title{font-size:13px;font-weight:500;color:var(--tp);margin-bottom:2px}
+.lv-service-est{font-size:10px;font-family:monospace;color:var(--tt)}
+.lv-service-desc{font-size:12px;color:var(--ts);line-height:1.75;margin-bottom:.75rem}
+.lv-service-funds{display:flex;flex-wrap:wrap;gap:4px}
+.lv-fund-tag{font-size:10px;padding:2px 9px;border-radius:99px;font-family:monospace;white-space:nowrap}
+.lv-fund-blue  {background:#EBF4FF;color:#1A5FAF}
+.lv-fund-teal  {background:#E1F5EE;color:#085041}
+.lv-fund-amber {background:#FAEEDA;color:#7A3D08}
+.lv-fund-coral {background:#FAECE7;color:#7A2D10}
+.lv-fund-purple{background:#EEEDFE;color:#3C3489}
+.lv-fund-gray  {background:var(--bgt);color:var(--ts)}
+
+/* callout box */
+.lv-callout{border-radius:8px;padding:.9rem 1.1rem;border:.5px solid transparent;margin-top:1rem}
+.lv-callout-blue {background:var(--pid-bg);border-color:var(--pid-n)}
+.lv-callout-teal {background:var(--pod-bg);border-color:var(--pod-n)}
+.lv-callout-label{font-family:monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--tt);margin-bottom:5px}
+.lv-callout p{font-size:12px;color:var(--ts);line-height:1.7}
+
+/* footer nav */
+.lv-nav-footer{display:flex;justify-content:space-between;align-items:center;padding:1.25rem 2rem;border-top:.5px solid var(--bp);background:var(--bgs)}
+.lv-nav-btn{background:var(--tp);color:var(--bgp);border:none;border-radius:7px;padding:8px 18px;font-size:12px;font-family:monospace;font-weight:500;cursor:pointer;transition:opacity .15s}
+.lv-nav-btn:hover{opacity:.85}
+.lv-nav-secondary{background:var(--bgt);color:var(--ts);border:.5px solid var(--bp)}
+.lv-nav-secondary:hover{background:var(--bp);opacity:1}
+
+@media(max-width:640px){
+  .lv-kpis{grid-template-columns:repeat(2,1fr)}
+  .lv-wrap{max-width:100%}
+  .lv-title{font-size:1.3rem}
+  .lv-step-n{width:36px;font-size:1rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="tabs">
+  <button class="tbtn active" onclick="sw('d',this)">District intelligence</button>
+  <button class="tbtn" onclick="sw('l',this)">SpEd placement lifecycle</button>
+  <button class="tbtn" onclick="sw('o',this)">Growth strategy</button>
+  <button class="tbtn" onclick="sw('v1',this)">Lever 1 &mdash; Medicaid</button>
+  <button class="tbtn" onclick="sw('v2',this)">Lever 2 &mdash; Efficiency</button>
+  <button class="tbtn" onclick="sw('v3',this)">Lever 3 &mdash; New services</button>
+  <button class="tbtn" onclick="sw('s',this)">Summer Bridge pilot</button>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="pd" class="panel active">
+<div class="dw">
+<div class="info"><strong>Physical / Neurological Impairment (PI/NI)</strong> districts within 1.5 hrs of Cotting School, Lexington MA. <span style="color:#185FA5">Blue = active Cotting partners</span> &middot; <span style="color:#854F0B">Amber = untapped</span>. OOD kids% = DESE Ind.5 LRE. OOD budget% = Schedule 19. OOD $/student = gross before circuit breaker.</div>
+<div class="ctrl">
+  <input type="text" id="q" placeholder="Search district or county..." oninput="rd()">
+  <select id="sf" onchange="rd()"><option value="">All states</option><option>MA</option><option>NH</option><option>RI</option></select>
+  <select id="cf" onchange="rd()"><option value="">All districts</option><option value="y">Active Cotting partners</option><option value="n">Untapped opportunities</option></select>
+  <select id="rf" onchange="rd()"><option value="">All risk</option><option value="H">High risk</option><option value="M">Moderate</option><option value="L">Low risk</option></select>
+  <select id="st" onchange="rd()">
+    <option value="drive">Sort: drive time</option>
+    <option value="ocp">Sort: OOD $/student</option>
+    <option value="osp">Sort: OOD students %</option>
+    <option value="obp">Sort: OOD budget %</option>
+    <option value="pi">Sort: PI/NI students</option>
+    <option value="lp">Sort: legal $/pupil</option>
+    <option value="ce">Sort: Cotting students</option>
+  </select>
+</div>
+<div class="krow">
+  <div class="kpi"><div class="kl">Districts</div><div class="kv" id="k0">-</div></div>
+  <div class="kpi"><div class="kl">Avg OOD $/student</div><div class="kv" id="k1" style="color:#085041">-</div></div>
+  <div class="kpi"><div class="kl">Avg OOD kids%</div><div class="kv" id="k2" style="color:#185FA5">-</div></div>
+  <div class="kpi"><div class="kl">Avg OOD budget%</div><div class="kv" id="k3" style="color:#0F6E56">-</div></div>
+  <div class="kpi"><div class="kl">Total OOD students</div><div class="kv" id="k4" style="color:#3C3489">-</div></div>
+  <div class="kpi"><div class="kl">High risk</div><div class="kv" id="k5" style="color:#A32D2D">-</div></div>
+</div>
+<div class="lgd">
+  <span class="lt" style="background:#E6F1FB;color:#185FA5">Blue = enroll/student (Ind.5)</span>
+  <span class="lt" style="background:#E1F5EE;color:#085041">Teal = finance (Sch.19)</span>
+  <span class="lt" style="background:#EEEDFE;color:#3C3489">Purple = PI/NI</span>
+  <span class="lt" style="background:#FAECE7;color:#993C1D">Coral = demog. risk</span>
+</div>
+<div class="tw">
+<table>
+<thead>
+<tr>
+  <th style="min-width:130px" title="District name">District</th>
+  <th style="min-width:28px" title="State">St</th>
+  <th style="min-width:44px" title="Drive time from Cotting School, Lexington MA" onclick="ss('drive')">Drive</th>
+  <th class="ga sep" style="min-width:52px" title="Total district enrollment" onclick="ss('enr')">Enrollment</th>
+  <th class="ga" style="min-width:52px" title="Special education students as % of total enrollment" onclick="ss('sp')">SpEd %</th>
+  <th class="ga" style="min-width:52px" title="Number of students placed out of district" onclick="ss('osn')">OOD students #</th>
+  <th class="ga" style="min-width:60px" title="Out-of-district placement rate: % of SpEd students placed outside the district (DESE Indicator 5 LRE)" onclick="ss('osp')">OOD kids %<span class="th-tip">% of SpEd students</span></th>
+  <th class="gb sep" style="min-width:64px" title="Total district budget divided by total enrollment" onclick="ss('cps')">Budget / student<span class="th-tip">total budget ÷ enrollment</span></th>
+  <th class="gb" style="min-width:60px" title="OOD tuition + transportation as % of total district budget (DESE Schedule 19)" onclick="ss('obp')">OOD budget %<span class="th-tip">% of total budget</span></th>
+  <th class="gb" style="min-width:64px" title="Estimated total annual OOD spending (gross before circuit breaker reimbursement)" onclick="ss('obd')">OOD spend $</th>
+  <th class="gb" style="min-width:72px" title="OOD spend divided by number of OOD students = average gross cost per student placed out of district" onclick="ss('ocp')">OOD $ / student<span class="th-tip">gross, before reimbursement</span></th>
+  <th class="gb" style="min-width:60px" title="Legal services expenditure per pupil (MA Schedule A filings)" onclick="ss('lp')">Legal $ / pupil<span class="th-tip">Schedule A filings</span></th>
+  <th class="gc sep" style="min-width:52px" title="Number of students with Physical Impairment or Neurological Impairment IEP codes (DESE FY2024)" onclick="ss('pi')">PI / NI count</th>
+  <th class="gc" style="min-width:56px" title="PI/NI students as % of total district enrollment" onclick="ss('pp')">PI % of enroll</th>
+  <th class="gd sep" style="min-width:44px" title="% of students identifying as Black or African American" onclick="ss('blk')">% Black</th>
+  <th class="gd" style="min-width:44px" title="% of students identifying as Hispanic or Latino" onclick="ss('lat')">% Latino</th>
+  <th class="gd" style="min-width:52px" title="% of students from low-income households" onclick="ss('li')">% Low income</th>
+  <th style="min-width:60px" title="Estimated number of current Cotting School students from this district (2023-24 Annual Report)" onclick="ss('ce')">Cotting enrolled<span class="th-tip">est. from annual report</span></th>
+  <th style="min-width:44px" title="Composite risk score: HIGH=5+ pts, MOD=2-4 pts, LOW=0-1 pt. Based on OOD rate, legal spend, poverty concentration, SpEd rate." onclick="ss('rs')">Risk</th>
+  <th style="min-width:180px" title="Primary schools and collaboratives receiving OOD students from this district. Click a row to expand. Estimated from geographic referral patterns and collaborative membership. Collab = educational collaborative; Private = approved private special education school.">OOD placement providers<span class="th-tip">click row to expand</span></th>
+</tr>
+<tr>
+  <th colspan="3" style="background:var(--bgs);font-size:9px;font-weight:400;color:var(--tt);padding:3px 8px;border-bottom:.5px solid var(--bp);border-top:none;letter-spacing:.02em;text-transform:none"></th>
+  <th colspan="4" class="sep" style="background:#EBF4FF;font-size:10px;font-weight:600;color:#185FA5;padding:3px 8px;border-bottom:.5px solid #B8D4F5;border-top:none;letter-spacing:.02em;text-transform:none">Enrollment data &mdash; DESE Indicator 5 LRE</th>
+  <th colspan="6" class="sep" style="background:#E8F5F0;font-size:10px;font-weight:600;color:#0F6E56;padding:3px 8px;border-bottom:.5px solid #A8DBC9;border-top:none;letter-spacing:.02em;text-transform:none">Finance data &mdash; DESE Schedule 19</th>
+  <th colspan="2" class="sep" style="background:#F0EFFE;font-size:10px;font-weight:600;color:#3C3489;padding:3px 8px;border-bottom:.5px solid #C4BFF5;border-top:none;letter-spacing:.02em;text-transform:none">Disability &mdash; IEP codes</th>
+  <th colspan="3" class="sep" style="background:#FDF0EA;font-size:10px;font-weight:600;color:#993C1D;padding:3px 8px;border-bottom:.5px solid #F0C4A8;border-top:none;letter-spacing:.02em;text-transform:none">Demographics</th>
+  <th colspan="3" style="background:var(--bgs);border-bottom:.5px solid var(--bp);border-top:none;padding:3px 8px"></th>
+</tr>
+</thead>
+<tbody id="tb"></tbody>
+</table>
+</div>
+<p class="nt">OOD kids% = DESE Ind.5 LRE FY2024. OOD budget% = est. Schedule 19. OOD $/student = gross before MA circuit breaker. Legal$/pu = Schedule A. PI/NI = DESE IEP-by-disability-code FY2024. Cotting@ = 2023-24 Annual Report confirmed; per-district counts estimated.</p>
+</div>
+</div>
+
+<!-- LIFECYCLE -->
+<div id="pl" class="panel">
+<div class="lw">
+<p class="sr">Ten-stage lifecycle from initial concern to OOD placement at Cotting School, Lexington MA, with annual return reviews. Three phases: identification (stages 1-4), in-district trial (5-6), out-of-district (7-10). Stage 10 recurs annually.</p>
+<div class="llg">
+  <div class="lli"><div class="lsw" style="background:var(--pid-bg);border:1px solid var(--pid-n)"></div>Identification</div>
+  <div class="lli"><div class="lsw" style="background:var(--ptr-bg);border:1px solid var(--ptr-n)"></div>In-district trial</div>
+  <div class="lli"><div class="lsw" style="background:var(--pod-bg);border:1px solid var(--pod-n)"></div>Out-of-district</div>
+  <div class="lct">Cotting plays a role</div>
+</div>
+
+<article class="card pi">
+  <div class="num-col"><span class="nb">1</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">Concern raised</h3><span class="cpill">3 - 12 months</span></div>
+    <p class="cdesc">A parent, teacher, daycare provider, or pediatrician notices the child is not developing on track. No formal meeting; observations may be verbal only.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Pediatrician, classroom teacher</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">"Wait and see", stigma, no documentation</div></div>
+    </div>
+  </div>
+</article>
+
+<article class="card pi">
+  <div class="num-col"><span class="nb">2</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">Pre-referral / MTSS</h3><span class="cpill">6 weeks - 2 years</span></div>
+    <p class="cdesc">General-ed team runs Tier 2 and Tier 3 interventions in 6-week cycles. Student Support Team meetings track data. No special ed consent needed.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Building principal, SST chair</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">Cycles repeat 1-2 years; family unaware a written referral can bypass MTSS</div></div>
+    </div>
+  </div>
+</article>
+
+<article class="card pi">
+  <div class="num-col"><span class="nb">3</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">Evaluation (60-day clock)</h3><span class="cpill">30 - 60 days</span></div>
+    <p class="cdesc">Once parental consent is signed, the district has a fixed timeline (30 school days in MA, 60 calendar days federally) to complete a comprehensive evaluation.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Team chair, school psychologist</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">Narrow evaluation scope - no neuropsych, AT, or medical review</div></div>
+    </div>
+    <div class="cr"><div class="ctg">Cotting role</div><p class="cd">Cotting Consulting may be contracted for AT or AAC evaluation; recommendations shape what services land in the IEP.</p></div>
+  </div>
+</article>
+
+<article class="card pi">
+  <div class="num-col"><span class="nb">4</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">Eligibility and initial IEP</h3><span class="cpill">30 - 45 days</span></div>
+    <p class="cdesc">Team Meeting reviews evaluations, determines eligibility under one of 13 IDEA categories, drafts the initial IEP. Parent signs for services to begin.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">LEA representative (SpEd coordinator/director)</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">Found not eligible, wrong category, or services written at the floor</div></div>
+    </div>
+  </div>
+</article>
+
+<article class="card pt">
+  <div class="num-col"><span class="nb">5</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">In-district programming</h3><span class="cpill">1 - 5 years</span></div>
+    <p class="cdesc">Child receives services per IEP: resource room, push-in, pull-out therapy, 1:1 aide. Annual IEP review, triennial reevaluation. Most students spend years here.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Building principal, case manager</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">Annual teacher turnover, copy-paste IEPs, no continuity</div></div>
+    </div>
+    <div class="cr"><div class="ctg">Cotting role</div><p class="cd">Cotting Consulting may provide PD, AAC support, or curriculum modification to district staff. Serves approximately 30 MA districts.</p></div>
+  </div>
+</article>
+
+<article class="card pt">
+  <div class="num-col"><span class="nb">6</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">Lack of progress documented</h3><span class="cpill">3 - 12 months</span></div>
+    <p class="cdesc">Team formally acknowledges current programming is not working. May trigger an interim IEP meeting, a new FBA, or fresh evaluations after incidents.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Case manager, related service providers</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">Plateau reframed as "stable"; data selectively reported</div></div>
+    </div>
+  </div>
+</article>
+
+<article class="card po">
+  <div class="num-col"><span class="nb">7</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">OOD placement considered</h3><span class="cpill">3 - 9 months</span></div>
+    <p class="cdesc">Team Meeting to discuss placement along the LRE continuum: gen ed to partial inclusion to substantially separate to collaborative to OOD.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Director of Special Education</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">LRE used to block; family counseled out to private placement at their expense</div></div>
+    </div>
+    <div class="cr"><div class="ctg">Cotting role</div><p class="cd">Becomes a named candidate placement. Family and district may schedule a campus tour. Cotting fits students with complex medical, physical, AAC, or communication needs.</p></div>
+  </div>
+</article>
+
+<article class="card po">
+  <div class="num-col"><span class="nb">8</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">District approval</h3><span class="cpill">1 - 6 months</span></div>
+    <p class="cdesc">SpEd director recommendation must clear business office, superintendent, and sometimes school committee. State notification (DESE) for approved private school pricing.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Superintendent, Business Manager, SpEd Director</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">Budget block, in-district counter-offer, due-process risk math</div></div>
+    </div>
+    <div class="cr"><div class="ctg">Cotting role</div><p class="cd">District negotiates tuition at the OSD-approved rate (~$95K-$130K/year for day program). Contract executed.</p></div>
+  </div>
+</article>
+
+<article class="card po">
+  <div class="num-col"><span class="nb">9</span><span class="nl">Stage</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">OOD placement - enrollment</h3><span class="cpill">2 weeks - 3 years</span></div>
+    <p class="cdesc">Receiving school reviews the file, conducts an intake interview, often runs a shadow or trial day. Sending district amends IEP and arranges transportation.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Receiving school admissions, district transportation coordinator</div></div>
+      <div><div class="ml">Drop cause</div><div class="mv">School declines fit, waitlist (1-3 years), transport infeasible, family declines</div></div>
+    </div>
+    <div class="cr"><div class="ctg">Cotting role</div><p class="cd">Admissions reviews application; intake interview; trial day to assess fit. If accepted, child enrolls and Cotting staff join the IEP team.</p></div>
+  </div>
+</article>
+
+<article class="card po loop">
+  <div class="num-col"><span class="nb">10</span><span class="nl">Loop</span></div>
+  <div class="cbody">
+    <div class="chdr"><h3 class="ctitle">Return to in-district reviewed</h3><span class="cpill">Annually, recurring</span></div>
+    <p class="cdesc">At every annual IEP review while the child is at OOD, the team must consider whether the child can return to a less restrictive setting. Three outcomes: continue OOD, plan transition back, or change placement entirely.</p>
+    <div class="mg">
+      <div><div class="ml">Owner</div><div class="mv">Sending district SpEd Director, annual IEP team, receiving school</div></div>
+      <div><div class="ml">Return triggers</div><div class="mv">Progress at OOD, new in-district program, budget pressure, aging out, family relocation</div></div>
+    </div>
+    <div class="cr"><div class="ctg">Cotting role</div><p class="cd">Writes the progress reports that drive the return discussion. May support transition with Cotting Consulting handoff. Will itself request removal if behaviors exceed capacity (rare).</p></div>
+  </div>
+</article>
+
+<div class="sum">
+  <h3>Cumulative lifecycle</h3>
+  <p>From first concern to OOD enrollment: typically 2 to 7+ years. Typical OOD stay once placed: 3 to 12 years (until graduation, age-out at 22, or successful return). Stage 10 reviews repeat every year for the entire duration of the placement.</p>
+</div>
+</div>
+</div>
+
+
+<!-- OPPORTUNITY TAB -->
+<div id="po" class="panel">
+<div class="opwrap">
+<div class="op-hero">
+  <div class="op-hero-inner">
+    <div class="op-eyebrow">Strategic growth framework</div>
+    <h1 class="op-h1">Cotting already has the mission, the expertise, and the facilities.<br>Three levers — each in its own tab — show how to serve <em>more</em> students.</h1>
+    <p class="op-hero-sub">None of these levers compromise clinical quality. Together they unlock $2.5M&ndash;$3.5M in new or recovered annual revenue and the capacity to serve 25&ndash;35 additional students within the existing footprint.</p>
+  </div>
+</div>
+
+<div class="ov-cards">
+
+  <div class="ov-card" onclick="document.querySelector('.tbtn:nth-child(4)').click()">
+    <div class="ov-card-num ov-blue">01</div>
+    <div class="ov-card-body">
+      <div class="op-tag op-tag-blue">Revenue recovery</div>
+      <h2 class="ov-h2">Maximize Medicaid reimbursement</h2>
+      <p class="ov-desc">Cotting&#8217;s PT, OT, SLP, nursing, and AT services qualify for School-Based Medicaid billing under MassHealth. An estimated <strong>$2.2M/yr</strong> in federal revenue is currently left on the table &mdash; recoverable without adding staff, through a billing partner on contingency.</p>
+      <div class="ov-metrics">
+        <div class="ov-metric"><span class="ov-val">$2.2M</span><span class="ov-lbl">Est. unrealized annual Medicaid revenue</span></div>
+        <div class="ov-metric"><span class="ov-val">62%</span><span class="ov-lbl">Est. MassHealth-eligible student share</span></div>
+        <div class="ov-metric"><span class="ov-val">$0</span><span class="ov-lbl">Upfront cost with contingency billing model</span></div>
+      </div>
+      <div class="ov-link">View full plan &rarr;</div>
+    </div>
+  </div>
+
+  <div class="ov-card" onclick="document.querySelector('.tbtn:nth-child(5)').click()">
+    <div class="ov-card-num ov-teal">02</div>
+    <div class="ov-card-body">
+      <div class="op-tag op-tag-teal">Operational efficiency</div>
+      <h2 class="ov-h2">Reduce costs without reducing quality</h2>
+      <p class="ov-desc">Transport consortiums, shared back-office services with peer schools, bundled AAC licensing, and expanded Cotting Consulting revenue &mdash; each independently achievable, collectively worth <strong>$400K&ndash;$600K/yr</strong> in savings or new income.</p>
+      <div class="ov-metrics">
+        <div class="ov-metric"><span class="ov-val">30%</span><span class="ov-lbl">Budget share consumed by non-instructional overhead</span></div>
+        <div class="ov-metric"><span class="ov-val">3&ndash;5%</span><span class="ov-lbl">Achievable efficiency gain through consolidation</span></div>
+        <div class="ov-metric"><span class="ov-val">50+</span><span class="ov-lbl">Districts reachable through expanded Consulting</span></div>
+      </div>
+      <div class="ov-link">View full plan &rarr;</div>
+    </div>
+  </div>
+
+  <div class="ov-card" onclick="document.querySelector('.tbtn:nth-child(6)').click()">
+    <div class="ov-card-num ov-coral">03</div>
+    <div class="ov-card-body">
+      <div class="op-tag op-tag-coral">Additional services</div>
+      <h2 class="ov-h2">Expand what Cotting offers &mdash; using what it already has</h2>
+      <p class="ov-desc">An AT clinic, expanded district PD, a transition program, and the Summer Bridge &mdash; all fundable through external sources (Medicaid, IDEA, MRC/VR grants, tuition fees) that bypass the district tuition relationship entirely.</p>
+      <div class="ov-metrics">
+        <div class="ov-metric"><span class="ov-val">$470K+</span><span class="ov-lbl">Est. combined annual revenue from all service extensions</span></div>
+        <div class="ov-metric"><span class="ov-val">4</span><span class="ov-lbl">New service lines, each independently fundable</span></div>
+        <div class="ov-metric"><span class="ov-val">0</span><span class="ov-lbl">Additional permanent FTEs required in Year 1</span></div>
+      </div>
+      <div class="ov-link">View full plan &rarr;</div>
+    </div>
+  </div>
+
+</div><!-- end ov-cards -->
+
+<div class="op-summary">
+  <h2 class="op-sum-h">Combined impact: what all three levers achieve together</h2>
+  <div class="op-sum-grid">
+    <div class="op-sum-cell">
+      <div class="op-sum-icon" style="background:#EBF4FF;color:#1A5FAF">$</div>
+      <div class="op-sum-label">Financial sustainability</div>
+      <div class="op-sum-desc">Medicaid recovery + efficiency gains + new service revenue = $2.5M&ndash;$3.5M in new or recovered annual revenue. Enough to fund 25&ndash;35 additional student placements at no net cost increase to districts.</div>
+    </div>
+    <div class="op-sum-cell">
+      <div class="op-sum-icon" style="background:#E1F5EE;color:#085041">&#x25B2;</div>
+      <div class="op-sum-label">Enrollment capacity</div>
+      <div class="op-sum-desc">Revenue reinvestment funds the staffing to serve 130&ndash;145 students (vs. ~107 today) within the existing physical footprint &mdash; a 25&ndash;35% enrollment increase without a capital campaign.</div>
+    </div>
+    <div class="op-sum-cell">
+      <div class="op-sum-icon" style="background:#FAECE7;color:#7A2D10">&#x2764;</div>
+      <div class="op-sum-label">Community reach</div>
+      <div class="op-sum-desc">The Summer Bridge pilot generates 300+ informed family advocates over four summers in exactly the communities Cotting needs to reach &mdash; Black and Latino families in high-OOD districts where current referral networks don&#8217;t reach.</div>
+    </div>
+    <div class="op-sum-cell">
+      <div class="op-sum-icon" style="background:#EEEDFE;color:#26215C">&#x2665;</div>
+      <div class="op-sum-label">Mission alignment</div>
+      <div class="op-sum-desc">None of these strategies require Cotting to become something it isn&#8217;t. They extend the existing mission &mdash; serve more students, serve them better, and make sure the families who need Cotting most can actually find it.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end opwrap -->
+</div><!-- end panel po -->
+
+
+
+<!-- SUMMER BRIDGE TAB -->
+<div id="ps" class="panel">
+<div class="sbwrap">
+
+<div class="sb-hero">
+  <div class="sb-hero-inner">
+    <div class="op-eyebrow">Pilot proposal &mdash; Year 1</div>
+    <h1 class="op-h1">The Cotting Summer Bridge</h1>
+    <p class="sb-tagline">An integrated 6-week summer program pairing Cotting students with neurotypical peers in a 1:3 ratio &mdash; designed to maximize facility use, generate sustainable revenue, and build lasting community awareness in the families who need Cotting most.</p>
+  </div>
+</div>
+
+<!-- SECTION 1: THE IDEA -->
+<div class="sb-section">
+  <div class="sb-section-num">01</div>
+  <div class="sb-section-body">
+    <h2 class="op-h2">The core idea</h2>
+    <p class="op-desc">Cotting&#8217;s facilities, clinical staff, and therapeutic environment sit largely underutilized from late June through August. Rather than leaving that capacity idle, the Summer Bridge opens the campus to a cohort of neurotypical children who participate alongside Cotting&#8217;s enrolled students in structured activities designed by Cotting&#8217;s own clinical and educational team.</p>
+    <p class="op-desc">This is not a charity program or a service project. It is a genuine shared learning experience &mdash; one that is intentionally designed around the strengths of Cotting&#8217;s students, where both groups teach each other. The neurotypical peers are not helpers. They are co-participants who happen to leave with something most summer programs can&#8217;t offer: a real understanding of how to communicate across difference.</p>
+
+    <div class="sb-ratio-row">
+      <div class="sb-ratio-item sb-ratio-cotting">
+        <div class="sb-ratio-n">~25</div>
+        <div class="sb-ratio-label">Cotting students</div>
+        <div class="sb-ratio-sub">Current enrolled students, ages 5&ndash;18, with complex physical, communication, or multi-disability needs. Participation is voluntary &mdash; families opt in based on their child&#8217;s summer IEP goals.</div>
+      </div>
+      <div class="sb-ratio-connector">
+        <div class="sb-ratio-badge">1 : 3</div>
+        <div class="sb-ratio-desc">ratio</div>
+      </div>
+      <div class="sb-ratio-item sb-ratio-peer">
+        <div class="sb-ratio-n">~75</div>
+        <div class="sb-ratio-label">Peer participants</div>
+        <div class="sb-ratio-sub">Neurotypical children, ages 5&ndash;14, recruited from families in nearby sending districts. Priority enrollment for Black and Latino families from Everett, Lawrence, Chelsea, Lynn, Lowell, and Somerville.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: WHY BIPOC FAMILIES -->
+<div class="sb-section sb-section-alt">
+  <div class="sb-section-num">02</div>
+  <div class="sb-section-body">
+    <h2 class="op-h2">Why prioritize Black and Latino families</h2>
+    <p class="op-desc">The referral networks that surface schools like Cotting run predominantly through affluent, white professional communities. Black and Latino families with children who have disabilities face the largest information gaps about available services, the highest rates of late or missed diagnosis, and the most significant barriers to OOD placement &mdash; not because their children&#8217;s needs are less severe, but because no one told them Cotting exists.</p>
+
+    <div class="sb-insight-row">
+      <div class="sb-insight-card">
+        <div class="sb-insight-q">&ldquo;Mom, Cotting is the school where my cousin could go for amazing services.&rdquo;</div>
+        <div class="sb-insight-attr">What a Summer Bridge peer goes home and says &mdash; the most credible marketing Cotting could ever have</div>
+      </div>
+      <div class="sb-why-list">
+        <div class="sb-why-item">
+          <div class="sb-why-dot" style="background:#3C3489"></div>
+          <div class="sb-why-text"><strong>Word-of-mouth is the primary referral channel</strong> for disability services in communities where trust in institutions is low. A child who spends 6 weeks at Cotting carries that knowledge home in a way no brochure or outreach event can replicate.</div>
+        </div>
+        <div class="sb-why-item">
+          <div class="sb-why-dot" style="background:#085041"></div>
+          <div class="sb-why-text"><strong>Sending districts with the highest OOD rates</strong> (Everett 18.2%, Chelsea 19.1%, Lawrence 20.4%, Lynn 21.2%) also have the highest Black and Latino student populations &mdash; these are the communities Cotting&#8217;s outreach currently reaches least effectively.</div>
+        </div>
+        <div class="sb-why-item">
+          <div class="sb-why-dot" style="background:#7A2D10"></div>
+          <div class="sb-why-text"><strong>The Summer Bridge inverts the referral dynamic.</strong> Rather than waiting for the system to find these families, Cotting goes directly to the community &mdash; offering something genuinely valuable (a high-quality summer program) while building the awareness that drives future placements.</div>
+        </div>
+        <div class="sb-why-item">
+          <div class="sb-why-dot" style="background:#1A5FAF"></div>
+          <div class="sb-why-text"><strong>Integration benefits flow both ways.</strong> Cotting&#8217;s students gain peer interaction and generalization of skills in a less structured setting. Neurotypical peers gain communication tools, empathy, and confidence that research shows persist into adulthood.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: PROGRAM DESIGN -->
+<div class="sb-section">
+  <div class="sb-section-num">03</div>
+  <div class="sb-section-body">
+    <h2 class="op-h2">Program design</h2>
+    <p class="op-desc">Activities are designed by Cotting&#8217;s clinical and educational team to center each Cotting student&#8217;s communication modality and physical strengths. Neurotypical peers are briefed and coached, not just placed. Every activity has a clear therapeutic rationale for the Cotting students and a genuine developmental benefit for the peers.</p>
+
+    <div class="sb-activity-grid">
+      <div class="sb-activity">
+        <div class="sb-activity-label">AAC communication games</div>
+        <div class="sb-activity-desc">Peer pairs learn to use Cotting students&#8217; AAC devices to communicate. Fast-paced, game-based. Peers leave knowing what it&#8217;s like to build a sentence character by character &mdash; and develop genuine patience and curiosity for non-verbal communication.</div>
+      </div>
+      <div class="sb-activity">
+        <div class="sb-activity-label">Adapted art and music</div>
+        <div class="sb-activity-desc">Collaborative art projects designed for mixed physical abilities &mdash; large-format painting, percussion circles, clay. Structured around what each child can do, not what they can&#8217;t. No adaptations are hidden or apologized for; they&#8217;re presented as design features.</div>
+      </div>
+      <div class="sb-activity">
+        <div class="sb-activity-label">Movement and water play</div>
+        <div class="sb-activity-desc">Adapted PE and pool sessions using Cotting&#8217;s existing equipment. Peers participate in the same adapted formats &mdash; which often turn out to be more creative and engaging than standard PE. Physical boundaries disappear quickly in water.</div>
+      </div>
+      <div class="sb-activity">
+        <div class="sb-activity-label">Storytelling and literacy pairs</div>
+        <div class="sb-activity-desc">Peer reading partners, designed by Cotting&#8217;s SLPs. Each pair creates a shared story over 6 weeks using whatever communication tools work for them &mdash; voice, device, pictures, symbols. Culminates in a family presentation day.</div>
+      </div>
+      <div class="sb-activity">
+        <div class="sb-activity-label">Community field trips</div>
+        <div class="sb-activity-desc">2&ndash;3 fully accessible community outings per session (libraries, parks, museums, gardens). Peers learn to navigate public spaces with someone who experiences them differently. Cotting students practice community independence with natural peer support.</div>
+      </div>
+      <div class="sb-activity">
+        <div class="sb-activity-label">Family presentation day</div>
+        <div class="sb-activity-desc">End-of-session celebration where each pair presents their shared story or project to families. This is the moment the peer&#8217;s family sees Cotting&#8217;s environment, meets the staff, and understands the mission firsthand &mdash; without being sold to.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: STAFFING -->
+<div class="sb-section sb-section-alt">
+  <div class="sb-section-num">04</div>
+  <div class="sb-section-body">
+    <h2 class="op-h2">Staffing model</h2>
+    <p class="op-desc">The Summer Bridge is designed to run on existing Cotting staff with targeted summer stipends &mdash; not new permanent hires. This keeps the fixed cost low and gives Cotting the ability to scale year-over-year based on demand.</p>
+
+    <div class="sb-staff-table">
+      <div class="sb-staff-row sb-staff-header">
+        <div class="sb-staff-role">Role</div>
+        <div class="sb-staff-count">Count</div>
+        <div class="sb-staff-source">Source</div>
+        <div class="sb-staff-cost">Est. summer cost</div>
+      </div>
+      <div class="sb-staff-row">
+        <div class="sb-staff-role">Program director (0.5 FTE)</div>
+        <div class="sb-staff-count">1</div>
+        <div class="sb-staff-source">Existing Cotting administrator</div>
+        <div class="sb-staff-cost">$8,000 stipend</div>
+      </div>
+      <div class="sb-staff-row">
+        <div class="sb-staff-role">Lead teachers (Cotting-certified)</div>
+        <div class="sb-staff-count">4</div>
+        <div class="sb-staff-source">Existing Cotting teaching staff</div>
+        <div class="sb-staff-cost">$6,500 each &mdash; $26,000</div>
+      </div>
+      <div class="sb-staff-row">
+        <div class="sb-staff-role">SLP / AAC specialist</div>
+        <div class="sb-staff-count">2</div>
+        <div class="sb-staff-source">Existing Cotting therapists</div>
+        <div class="sb-staff-cost">$7,000 each &mdash; $14,000</div>
+      </div>
+      <div class="sb-staff-row">
+        <div class="sb-staff-role">OT / PT specialist</div>
+        <div class="sb-staff-count">2</div>
+        <div class="sb-staff-source">Existing Cotting therapists</div>
+        <div class="sb-staff-cost">$7,000 each &mdash; $14,000</div>
+      </div>
+      <div class="sb-staff-row">
+        <div class="sb-staff-role">Paraprofessionals / aides</div>
+        <div class="sb-staff-count">8</div>
+        <div class="sb-staff-source">Existing + seasonal hire</div>
+        <div class="sb-staff-cost">$4,000 each &mdash; $32,000</div>
+      </div>
+      <div class="sb-staff-row">
+        <div class="sb-staff-role">Community outreach coordinator</div>
+        <div class="sb-staff-count">1</div>
+        <div class="sb-staff-source">New seasonal hire (bilingual preferred)</div>
+        <div class="sb-staff-cost">$6,000</div>
+      </div>
+      <div class="sb-staff-row sb-staff-total">
+        <div class="sb-staff-role">Total staffing cost</div>
+        <div class="sb-staff-count">18</div>
+        <div class="sb-staff-source">Year 1 pilot</div>
+        <div class="sb-staff-cost"><strong>~$100,000</strong></div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--tt);margin-top:6px">Staff retention benefit: retaining existing staff through summer reduces the annual turnover cost (estimated $12K&ndash;$18K per SpEd staff departure) and maintains IEP continuity for Cotting students transitioning between school year and summer programming.</p>
+  </div>
+</div>
+
+<!-- SECTION 5: FINANCIALS -->
+<div class="sb-section">
+  <div class="sb-section-num">05</div>
+  <div class="sb-section-body">
+    <h2 class="op-h2">Financial model &mdash; Year 1 pilot</h2>
+
+    <div class="sb-fin-grid">
+      <div class="sb-fin-block sb-fin-revenue">
+        <div class="sb-fin-head">Revenue</div>
+        <div class="sb-fin-row"><span>75 peer participants &times; $3,800 avg tuition</span><span class="sb-fin-num">$285,000</span></div>
+        <div class="sb-fin-row sb-fin-sub"><span class="sb-fin-indent">Full-pay slots (50 at $4,500)</span><span class="sb-fin-num">$225,000</span></div>
+        <div class="sb-fin-row sb-fin-sub"><span class="sb-fin-indent">Subsidized slots (25 at $2,400, grant-funded)</span><span class="sb-fin-num">$60,000</span></div>
+        <div class="sb-fin-row"><span>Foundation / DEI grants (subsidize BIPOC slots)</span><span class="sb-fin-num">$40,000</span></div>
+        <div class="sb-fin-row"><span>Corporate sponsorship (local businesses, Cotting alumni)</span><span class="sb-fin-num">$20,000</span></div>
+        <div class="sb-fin-row sb-fin-total"><span>Total revenue</span><span class="sb-fin-num">$345,000</span></div>
+      </div>
+      <div class="sb-fin-block sb-fin-expense">
+        <div class="sb-fin-head">Expenses</div>
+        <div class="sb-fin-row"><span>Staffing (stipends + seasonal hire)</span><span class="sb-fin-num">$100,000</span></div>
+        <div class="sb-fin-row"><span>Materials, supplies, adapted equipment</span><span class="sb-fin-num">$18,000</span></div>
+        <div class="sb-fin-row"><span>Community outreach &amp; recruitment</span><span class="sb-fin-num">$12,000</span></div>
+        <div class="sb-fin-row"><span>Transportation (2 field trips per session)</span><span class="sb-fin-num">$8,000</span></div>
+        <div class="sb-fin-row"><span>Facilities / utilities (incremental)</span><span class="sb-fin-num">$14,000</span></div>
+        <div class="sb-fin-row"><span>Program coordination / admin overhead (8%)</span><span class="sb-fin-num">$12,000</span></div>
+        <div class="sb-fin-row sb-fin-total"><span>Total expenses</span><span class="sb-fin-num">$164,000</span></div>
+      </div>
+    </div>
+
+    <div class="sb-fin-surplus">
+      <div class="sb-fin-surplus-label">Year 1 net surplus</div>
+      <div class="sb-fin-surplus-val">$181,000</div>
+      <div class="sb-fin-surplus-sub">Reinvested into: subsidized slots for BIPOC families (Year 2), AAC device pool expansion, and 1 additional Cotting student placement per year</div>
+    </div>
+
+    <div class="sb-fin-sources">
+      <div class="sb-fin-sources-label">Fundable through</div>
+      <div class="op-fund-chips" style="margin-top:6px">
+        <span class="op-fund-chip" style="background:#EBF4FF;color:#1A5FAF">Peer tuition (full-pay families)</span>
+        <span class="op-fund-chip" style="background:#E1F5EE;color:#085041">Foundation DEI / inclusion grants</span>
+        <span class="op-fund-chip" style="background:#FAEEDA;color:#633806">Corporate community investment</span>
+        <span class="op-fund-chip" style="background:#EEEDFE;color:#3C3489">State disability awareness grants</span>
+        <span class="op-fund-chip" style="background:#FAECE7;color:#7A2D10">Federal IDEA Part B outreach funds</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: TIMELINE -->
+<div class="sb-section sb-section-alt">
+  <div class="sb-section-num">06</div>
+  <div class="sb-section-body">
+    <h2 class="op-h2">Pilot timeline</h2>
+    <div class="sb-timeline">
+      <div class="sb-tl-item">
+        <div class="sb-tl-dot"></div>
+        <div class="sb-tl-body">
+          <div class="sb-tl-when">Sept &ndash; Nov 2025</div>
+          <div class="sb-tl-title">Design and approvals</div>
+          <div class="sb-tl-desc">Clinical team designs activity curriculum. Board approves pilot. Medicaid billing audit completed. Grant applications submitted to 3&ndash;5 DEI-focused foundations.</div>
+        </div>
+      </div>
+      <div class="sb-tl-item">
+        <div class="sb-tl-dot"></div>
+        <div class="sb-tl-body">
+          <div class="sb-tl-when">Dec 2025 &ndash; Feb 2026</div>
+          <div class="sb-tl-title">Community outreach begins</div>
+          <div class="sb-tl-desc">Bilingual outreach coordinator hired. Partnerships established with community organizations in Everett, Chelsea, Lawrence, Lynn. Peer enrollment opens with priority slots for BIPOC families. Full-pay enrollment opens simultaneously.</div>
+        </div>
+      </div>
+      <div class="sb-tl-item">
+        <div class="sb-tl-dot"></div>
+        <div class="sb-tl-body">
+          <div class="sb-tl-when">March &ndash; May 2026</div>
+          <div class="sb-tl-title">Enrollment closes + staff preparation</div>
+          <div class="sb-tl-desc">Peer cohort confirmed. Staff complete peer integration training (2-day). Cotting families receive detailed program overview. Individual activity plans created for each Cotting student based on summer IEP goals.</div>
+        </div>
+      </div>
+      <div class="sb-tl-item">
+        <div class="sb-tl-dot"></div>
+        <div class="sb-tl-body">
+          <div class="sb-tl-when">July &ndash; Aug 2026</div>
+          <div class="sb-tl-title">Year 1 pilot program</div>
+          <div class="sb-tl-desc">6 weeks of programming. Weekly clinical check-ins. Outcome data collected: communication goal progress for Cotting students, family satisfaction surveys for both groups, peer learning self-assessments.</div>
+        </div>
+      </div>
+      <div class="sb-tl-item">
+        <div class="sb-tl-dot"></div>
+        <div class="sb-tl-body">
+          <div class="sb-tl-when">Sept 2026</div>
+          <div class="sb-tl-title">Evaluation + Year 2 planning</div>
+          <div class="sb-tl-desc">Program report to board. Outcome data published (anonymized) for grant reporting. Year 2 enrollment opens with expanded capacity based on Year 1 demand. Track referral conversions from Summer Bridge families over 12&ndash;24 months.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 7: THE LONG GAME -->
+<div class="sb-section">
+  <div class="sb-section-num">07</div>
+  <div class="sb-section-body">
+    <h2 class="op-h2">The long game: what 4 summers builds</h2>
+    <div class="op-metric-row">
+      <div class="op-metric"><div class="op-metric-val">300+</div><div class="op-metric-lbl">Peer alumni by Year 4, each an informed community ambassador for Cotting&#8217;s mission in their home neighborhood</div></div>
+      <div class="op-metric"><div class="op-metric-val">~$720K</div><div class="op-metric-lbl">Cumulative net surplus over 4 years, funding program expansion and additional Cotting student placements</div></div>
+      <div class="op-metric"><div class="op-metric-val">12&ndash;18</div><div class="op-metric-lbl">Estimated additional Cotting placements generated by Summer Bridge family referrals, based on comparable peer integration program outcomes</div></div>
+      <div class="op-metric"><div class="op-metric-val">Year 3</div><div class="op-metric-lbl">When the program reaches self-sustaining waitlist status, based on comparable programs at Perkins and Kennedy-Donovan</div></div>
+    </div>
+    <div class="op-insight op-insight-coral" style="margin-top:1.25rem">
+      <div class="op-insight-label">The mission case</div>
+      <p>Cotting&#8217;s most urgent strategic challenge is not quality &mdash; it is visibility. The families who would benefit most from Cotting&#8217;s services are the least likely to know it exists. The Summer Bridge solves this not through marketing, but through experience. It lets the mission speak for itself, through the voices of children who spent a summer there and came home changed.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end sbwrap -->
+</div><!-- end panel ps -->
+
+
+<!-- ═══════════════════════════════ LEVER 1 ═══════════════════════════════ -->
+<div id="pv1" class="panel">
+<div class="lv-wrap">
+
+  <div class="lv-header lv-header-blue">
+    <div class="lv-header-meta">Lever 01 of 03 &nbsp;·&nbsp; Revenue recovery</div>
+    <h1 class="lv-title">Maximize Medicaid reimbursement</h1>
+    <p class="lv-sub">Cotting provides medically-necessary services that already qualify for federal reimbursement. An estimated <strong>$2.2M per year</strong> is currently left on the table — recoverable without adding a single staff member.</p>
+  </div>
+
+  <div class="lv-kpis">
+    <div class="lv-kpi"><div class="lv-kpi-val">~$2.2M</div><div class="lv-kpi-lbl">Estimated unrealized annual Medicaid revenue</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">62%</div><div class="lv-kpi-lbl">Est. share of students MassHealth-eligible</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">$0</div><div class="lv-kpi-lbl">Upfront cost using contingency billing model</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">5–6</div><div class="lv-kpi-lbl">Additional students fundable per $500K recovered</div></div>
+  </div>
+
+  <div class="lv-body">
+
+    <div class="lv-section">
+      <h2 class="lv-section-title">Why this money exists</h2>
+      <p class="lv-p">Under the federal School-Based Medicaid program, any service listed in a student&#8217;s IEP that is medically necessary can be billed to Medicaid — regardless of whether the student attends a public school or an approved private school like Cotting. PT, OT, speech-language pathology, nursing support, and assistive technology evaluations all qualify. Most approved private schools in Massachusetts are not billing for these services at all, or are billing at a fraction of what is recoverable.</p>
+      <p class="lv-p">Cotting&#8217;s sending districts include Lawrence (84% low-income), Chelsea (78%), Lynn (79%), and Lowell (71%). A majority of students in these districts qualify for MassHealth. That means a majority of Cotting&#8217;s students are likely MassHealth-eligible — and their services are billable.</p>
+    </div>
+
+    <div class="lv-section">
+      <h2 class="lv-section-title">The four-step recovery plan</h2>
+      <div class="lv-steps">
+        <div class="lv-step">
+          <div class="lv-step-n">1</div>
+          <div class="lv-step-body">
+            <div class="lv-step-title">Audit current IEP documentation against Medicaid billing codes</div>
+            <p class="lv-step-desc">Review all IEPs for services that map to CMS billing codes: PT (CPT 97110, 97530), OT (CPT 97165–97168), SLP (CPT 92507, 92508), nursing, psychological services, AT evaluation. Quantify the reimbursable service hours per student. This audit typically takes 4–6 weeks with a billing partner.</p>
+          </div>
+        </div>
+        <div class="lv-step">
+          <div class="lv-step-n">2</div>
+          <div class="lv-step-body">
+            <div class="lv-step-title">Confirm MassHealth enrollment for eligible students</div>
+            <p class="lv-step-desc">Work with sending district teams to verify MassHealth enrollment status for each student. Many families in high-poverty sending districts already have MassHealth coverage; those who don&#8217;t may qualify. District special ed administrators are experienced in facilitating enrollment — this is not Cotting&#8217;s burden to carry alone.</p>
+          </div>
+        </div>
+        <div class="lv-step">
+          <div class="lv-step-n">3</div>
+          <div class="lv-step-body">
+            <div class="lv-step-title">Partner with a school-based Medicaid billing vendor</div>
+            <p class="lv-step-desc">Engage a vendor (Public Consulting Group, Conduent, Qualidigm) on a contingency-fee model — typically 8–12% of recovered revenue with no upfront cost. The vendor handles coding, claim submission, audit defense, and compliance. Cotting&#8217;s clinical staff do not change their documentation practices; the vendor recodes existing records into billable formats.</p>
+          </div>
+        </div>
+        <div class="lv-step">
+          <div class="lv-step-n">4</div>
+          <div class="lv-step-body">
+            <div class="lv-step-title">Reinvest recovered revenue into enrollment capacity</div>
+            <p class="lv-step-desc">Each $500K recovered funds approximately 5–6 additional student placements at no net cost increase to districts. At full recovery ($2.2M), Cotting could serve 20–25 additional students annually — a 20% enrollment increase — without raising tuition or launching a capital campaign.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lv-section">
+      <h2 class="lv-section-title">Why this matters for district outreach</h2>
+      <p class="lv-p">Districts from high-poverty communities are most financially constrained by OOD tuition costs. If Cotting&#8217;s effective net tuition decreases through Medicaid co-billing — which reduces Cotting&#8217;s operating cost per student — the financial barrier for districts like Everett, Chelsea, and Lawrence drops directly. More students from these communities can access Cotting&#8217;s services.</p>
+      <div class="lv-callout lv-callout-blue">
+        <div class="lv-callout-label">Key insight</div>
+        <p>Medicaid recovery is not a fundraising strategy. It is a cost-recovery strategy. The federal government has already allocated these dollars for exactly these services. Cotting is simply not yet collecting what it is owed.</p>
+      </div>
+    </div>
+
+  </div><!-- lv-body -->
+
+  <div class="lv-nav-footer">
+    <div></div>
+    <button class="lv-nav-btn" onclick="document.querySelector('.tbtn:nth-child(5)').click()">Next: Lever 2 — Efficiency &rarr;</button>
+  </div>
+
+</div><!-- lv-wrap -->
+</div><!-- end panel pv1 -->
+
+
+<!-- ═══════════════════════════════ LEVER 2 ═══════════════════════════════ -->
+<div id="pv2" class="panel">
+<div class="lv-wrap">
+
+  <div class="lv-header lv-header-teal">
+    <div class="lv-header-meta">Lever 02 of 03 &nbsp;·&nbsp; Operational efficiency</div>
+    <h1 class="lv-title">Reduce costs without reducing quality</h1>
+    <p class="lv-sub">Cotting&#8217;s clinical quality depends on staffing ratios — those stay protected. But 30% of a typical approved school&#8217;s budget goes to non-instructional overhead. Four targeted efficiencies collectively free up <strong>$400K–$600K per year.</strong></p>
+  </div>
+
+  <div class="lv-kpis">
+    <div class="lv-kpi"><div class="lv-kpi-val">30%</div><div class="lv-kpi-lbl">Budget share consumed by non-instructional overhead</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">$8–12K</div><div class="lv-kpi-lbl">Average annual transport cost per OOD student</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">50+</div><div class="lv-kpi-lbl">Districts reachable through expanded Cotting Consulting</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">4–6</div><div class="lv-kpi-lbl">Additional students fundable per $500K freed</div></div>
+  </div>
+
+  <div class="lv-body">
+
+    <div class="lv-section">
+      <h2 class="lv-section-title">The efficiency-to-enrollment flywheel</h2>
+      <p class="lv-p">Every dollar saved in overhead can fund approximately one dollar of additional student-facing service. At Cotting&#8217;s scale, a 5% operational efficiency gain — roughly $400K–$600K annually — translates directly into the ability to serve 4–6 additional students, without a tuition increase to districts and without touching any clinical program.</p>
+      <p class="lv-p">None of the four efficiency levers below require Cotting to change what it teaches, how it teaches it, or who teaches it. They operate in the background of the school&#8217;s operations.</p>
+    </div>
+
+    <div class="lv-section">
+      <h2 class="lv-section-title">Four efficiency levers</h2>
+      <div class="lv-eff-grid">
+
+        <div class="lv-eff-card">
+          <div class="lv-eff-num">A</div>
+          <div class="lv-eff-body">
+            <div class="lv-eff-title">Transportation consortium</div>
+            <div class="lv-eff-est">Save $80K–$140K/yr</div>
+            <p class="lv-eff-desc">Coordinate with LABBB, South Shore Collaborative, and 2–3 nearby approved schools to share bus routes serving overlapping sending districts. A student from Newton attending Cotting and a student from Newton attending LABBB are likely on near-identical routes. Pooled routing reduces per-district cost by 15–25% and removes a common barrier to placement for distant districts.</p>
+          </div>
+        </div>
+
+        <div class="lv-eff-card">
+          <div class="lv-eff-num">B</div>
+          <div class="lv-eff-body">
+            <div class="lv-eff-title">Shared back-office services</div>
+            <div class="lv-eff-est">Save $120K–$180K/yr</div>
+            <p class="lv-eff-desc">Pool HR, finance, compliance, and IT functions with 1–2 peer approved schools (Perkins, Lighthouse, or similar). Each school maintains full clinical and programmatic independence. Only the back-office functions are shared — payroll processing, benefit administration, financial reporting, DESE compliance filing. Standard model used by school networks across Massachusetts.</p>
+          </div>
+        </div>
+
+        <div class="lv-eff-card">
+          <div class="lv-eff-num">C</div>
+          <div class="lv-eff-body">
+            <div class="lv-eff-title">Bundled AAC and AT licensing</div>
+            <div class="lv-eff-est">Save $40K–$80K/yr · Generate new revenue</div>
+            <p class="lv-eff-desc">Negotiate district-level software and device licenses for AAC tools (Tobii Dynavox, Proloquo2Go, Snap Core First) as a service bundled into Cotting&#8217;s tuition. Districts currently procure these independently at retail rates. Cotting buys in volume, saves money on device costs, and strengthens its value proposition to districts — who no longer need to separately budget for AT.</p>
+          </div>
+        </div>
+
+        <div class="lv-eff-card">
+          <div class="lv-eff-num">D</div>
+          <div class="lv-eff-body">
+            <div class="lv-eff-title">Cotting Consulting expansion</div>
+            <div class="lv-eff-est">Generate $200K–$350K/yr in new revenue</div>
+            <p class="lv-eff-desc">Cotting Consulting currently serves ~30 districts with PD, AAC coaching, and curriculum modification support. Expanding to 50+ districts using existing staff on a part-time consulting basis — no new FTEs — generates meaningful incremental revenue. Districts can fund this through IDEA Part B or Title I professional development allocations, making it budget-neutral for them.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="lv-section">
+      <h2 class="lv-section-title">What not to cut</h2>
+      <div class="lv-callout lv-callout-teal">
+        <div class="lv-callout-label">Guardrail</div>
+        <p>None of these efficiency measures touch student-to-staff ratios, therapy session frequency, assistive technology provision, or clinical supervision hours. These are the inputs that define Cotting&#8217;s outcomes — they are not cost centers to be optimized. The levers above operate exclusively in administrative, procurement, and logistical functions.</p>
+      </div>
+    </div>
+
+  </div><!-- lv-body -->
+
+  <div class="lv-nav-footer">
+    <button class="lv-nav-btn lv-nav-secondary" onclick="document.querySelector('.tbtn:nth-child(4)').click()">&larr; Lever 1 — Medicaid</button>
+    <button class="lv-nav-btn" onclick="document.querySelector('.tbtn:nth-child(6)').click()">Next: Lever 3 — New services &rarr;</button>
+  </div>
+
+</div><!-- lv-wrap -->
+</div><!-- end panel pv2 -->
+
+
+<!-- ═══════════════════════════════ LEVER 3 ═══════════════════════════════ -->
+<div id="pv3" class="panel">
+<div class="lv-wrap">
+
+  <div class="lv-header lv-header-coral">
+    <div class="lv-header-meta">Lever 03 of 03 &nbsp;·&nbsp; Additional services</div>
+    <h1 class="lv-title">Expand what Cotting offers &mdash; using what it already has</h1>
+    <p class="lv-sub">Four service extensions that generate revenue from funding streams completely separate from district tuition. No additional permanent headcount required in Year 1. Each is independently fundable and independently launchable.</p>
+  </div>
+
+  <div class="lv-kpis">
+    <div class="lv-kpi"><div class="lv-kpi-val">$470K+</div><div class="lv-kpi-lbl">Combined est. annual revenue from all four extensions</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">4</div><div class="lv-kpi-lbl">New service lines, each independently fundable</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">0</div><div class="lv-kpi-lbl">Additional permanent FTEs required in Year 1</div></div>
+    <div class="lv-kpi"><div class="lv-kpi-val">0</div><div class="lv-kpi-lbl">Impact on district tuition relationships</div></div>
+  </div>
+
+  <div class="lv-body">
+
+    <div class="lv-section">
+      <h2 class="lv-section-title">Why external funding changes the equation</h2>
+      <p class="lv-p">Every service extension below draws from funding streams — Medicaid, federal grants, vocational rehabilitation programs, or direct family fees — that have no relationship to district tuition budgets. This means Cotting can expand its total revenue and impact without increasing the cost burden on the districts it depends on as placement partners. The additional services pay for themselves.</p>
+    </div>
+
+    <div class="lv-section">
+      <h2 class="lv-section-title">Four service extensions</h2>
+
+      <div class="lv-services">
+
+        <div class="lv-service">
+          <div class="lv-service-header">
+            <div class="lv-service-badge lv-badge-blue">AT</div>
+            <div>
+              <div class="lv-service-title">Assistive technology clinic</div>
+              <div class="lv-service-est">Est. $120K–$180K/yr &nbsp;·&nbsp; 5–8 sessions/week</div>
+            </div>
+          </div>
+          <p class="lv-service-desc">Open Cotting&#8217;s AT and AAC lab to community families outside the school day — evenings and Saturdays. Families navigating the public school system often wait 12–18 months for a district AT evaluation. A 2–4 hour Cotting assessment session, billed to MassHealth or private insurance at $400–$800, fills that gap immediately. No new equipment needed. Cotting&#8217;s existing SLPs and AT specialists deliver on a stipend or flex-time model.</p>
+          <div class="lv-service-funds">
+            <span class="lv-fund-tag lv-fund-blue">MassHealth reimbursement</span>
+            <span class="lv-fund-tag lv-fund-gray">Private insurance</span>
+            <span class="lv-fund-tag lv-fund-purple">DESE AT grant program</span>
+          </div>
+        </div>
+
+        <div class="lv-service">
+          <div class="lv-service-header">
+            <div class="lv-service-badge lv-badge-teal">PD</div>
+            <div>
+              <div class="lv-service-title">District professional development</div>
+              <div class="lv-service-est">Est. $200K–$350K/yr &nbsp;·&nbsp; 20 additional district contracts</div>
+            </div>
+          </div>
+          <p class="lv-service-desc">Scale Cotting Consulting from ~30 to 50+ districts by packaging clinical expertise into purchasable PD modules: AAC implementation, physical disability inclusion, adapted PE, sensory environment design. Districts fund this through IDEA Part B or Title I professional development allocations — making it budget-neutral for them. Existing Cotting staff deliver on a stipend or release-time model, with no permanent hire required.</p>
+          <div class="lv-service-funds">
+            <span class="lv-fund-tag lv-fund-blue">IDEA Part B district funds</span>
+            <span class="lv-fund-tag lv-fund-gray">Title I set-aside</span>
+            <span class="lv-fund-tag lv-fund-amber">State PD grants (DESE)</span>
+          </div>
+        </div>
+
+        <div class="lv-service">
+          <div class="lv-service-header">
+            <div class="lv-service-badge lv-badge-amber">TT</div>
+            <div>
+              <div class="lv-service-title">Transition and employment prep</div>
+              <div class="lv-service-est">Est. $150K–$240K/yr &nbsp;·&nbsp; 15–25 transition-age students</div>
+            </div>
+          </div>
+          <p class="lv-service-desc">Students with physical and neurological disabilities face a sharp cliff at age 22. Cotting can extend its mission post-graduation with a structured transition program — vocational assessments, AAC-supported job coaching, community integration skills. Funded entirely through MRC, DDS, and federal VR grants. No tuition required from districts. Cotting&#8217;s clinical team is uniquely qualified to deliver this; no comparable program exists in the Lexington area.</p>
+          <div class="lv-service-funds">
+            <span class="lv-fund-tag lv-fund-coral">MRC / Vocational Rehab</span>
+            <span class="lv-fund-tag lv-fund-purple">DDS waiver funding</span>
+            <span class="lv-fund-tag lv-fund-teal">Federal WIOA grants</span>
+          </div>
+        </div>
+
+        <div class="lv-service lv-service-featured">
+          <div class="lv-service-header">
+            <div class="lv-service-badge lv-badge-purple">SB</div>
+            <div>
+              <div class="lv-service-title">Summer Bridge — peer integration pilot</div>
+              <div class="lv-service-est">Est. $180K–$260K/yr &nbsp;·&nbsp; Full pilot proposal in next tab</div>
+            </div>
+          </div>
+          <p class="lv-service-desc">A 6-week integrated summer program pairing Cotting students with neurotypical peers at a 1:3 ratio. Designed to maximize summer facility utilization, generate tuition revenue, and build lasting awareness in Black and Latino families from under-reached sending districts. This program is the most strategically powerful of the four extensions because it generates both revenue and community reach simultaneously — and the community reach compounds year over year as peer alumni carry the Cotting story home.</p>
+          <div class="lv-service-funds">
+            <span class="lv-fund-tag lv-fund-blue">Peer tuition fees</span>
+            <span class="lv-fund-tag lv-fund-teal">Foundation / DEI grants</span>
+            <span class="lv-fund-tag lv-fund-amber">Corporate sponsorship</span>
+          </div>
+          <button class="lv-nav-btn" style="margin-top:1rem" onclick="document.querySelector('.tbtn:nth-child(7)').click()">View full Summer Bridge pilot proposal &rarr;</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- lv-body -->
+
+  <div class="lv-nav-footer">
+    <button class="lv-nav-btn lv-nav-secondary" onclick="document.querySelector('.tbtn:nth-child(5)').click()">&larr; Lever 2 — Efficiency</button>
+    <button class="lv-nav-btn" onclick="document.querySelector('.tbtn:nth-child(7)').click()">Next: Summer Bridge pilot &rarr;</button>
+  </div>
+
+</div><!-- lv-wrap -->
+</div><!-- end panel pv3 -->
+
+
+<script>
+function sw(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
+  document.getElementById('p'+id).classList.add('active');
+  btn.classList.add('active');btn.setAttribute('aria-selected','true');
+}
+
+const CP=new Set(["Acton-Boxborough","Arlington","Bedford","Belmont","Beverly","Billerica","Boston","Brookline","Burlington","Cambridge","Chelmsford","Concord","Framingham","Hamilton-Wenham","Hopkinton","Lexington","Lowell","Lynn","Malden","Marlborough","Medford","Methuen","Milton","Natick","Needham","Newton","North Andover","Peabody","Plymouth","Quincy","Randolph","Reading","Revere","Salem","Somerville","Stoughton","Watertown","Waltham","Wellesley","Westford","Whitman-Hanson","Winchester","Woburn","Worcester","Avon","Norwell","Andover","Nashua","Manchester"]);
+const CE={"Lexington":5,"Arlington":4,"Newton":5,"Boston":8,"Cambridge":4,"Somerville":3,"Lowell":4,"Lynn":4,"Brookline":4,"Framingham":4,"Worcester":5,"Waltham":3,"Medford":3,"Quincy":3,"Malden":3,"Belmont":2,"Bedford":2,"Burlington":2,"Concord":2,"Woburn":2,"Wellesley":2,"Needham":2,"Winchester":2,"Reading":2,"Chelmsford":2,"Billerica":2,"Westford":2,"Natick":2,"Watertown":2,"Revere":2,"Beverly":2,"Andover":2,"North Andover":2,"Peabody":2,"Methuen":2,"Salem":2,"Stoughton":2,"Randolph":2,"Milton":2,"Marlborough":2,"Hopkinton":1,"Acton-Boxborough":1,"Hamilton-Wenham":1,"Norwell":1,"Plymouth":1,"Whitman-Hanson":1,"Avon":1,"Manchester":1,"Nashua":1};
+
+const OOD_P={"Lexington":[{"s":"LABBB Collaborative","n":28,"t":"collab"},{"s":"Cotting School","n":5,"t":"private"},{"s":"Perkins School for the Blind","n":4,"t":"private"},{"s":"Minute Man Arc","n":3,"t":"collab"}],"Arlington":[{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"Cotting School","n":4,"t":"private"},{"s":"Riverside Community Care","n":3,"t":"private"},{"s":"May Institute","n":3,"t":"private"}],"Belmont":[{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Perkins School for the Blind","n":2,"t":"private"},{"s":"Gifford School","n":2,"t":"private"}],"Bedford":[{"s":"LABBB Collaborative","n":16,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Minute Man Arc","n":2,"t":"collab"}],"Burlington":[{"s":"LABBB Collaborative","n":24,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":4,"t":"private"},{"s":"Northeast Arc","n":3,"t":"collab"}],"Concord":[{"s":"LABBB Collaborative","n":20,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Minute Man Arc","n":4,"t":"collab"},{"s":"Perkins School for the Blind","n":2,"t":"private"}],"Waltham":[{"s":"LABBB Collaborative","n":38,"t":"collab"},{"s":"Cotting School","n":3,"t":"private"},{"s":"May Institute","n":8,"t":"private"},{"s":"Northeast Arc","n":8,"t":"collab"}],"Woburn":[{"s":"LABBB Collaborative","n":30,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":6,"t":"private"},{"s":"Northeast Arc","n":4,"t":"collab"}],"Acton-Boxborough":[{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Cotting School","n":1,"t":"private"},{"s":"Minute Man Arc","n":4,"t":"collab"},{"s":"Perkins School for the Blind","n":2,"t":"private"}],"Billerica":[{"s":"Northeast Arc","n":28,"t":"collab"},{"s":"LABBB Collaborative","n":14,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":6,"t":"private"}],"Cambridge":[{"s":"LABBB Collaborative","n":42,"t":"collab"},{"s":"Cotting School","n":4,"t":"private"},{"s":"Perkins School for the Blind","n":8,"t":"private"},{"s":"May Institute","n":10,"t":"private"},{"s":"Kennedy-Donovan Center","n":4,"t":"private"}],"Reading":[{"s":"LABBB Collaborative","n":20,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Northeast Arc","n":6,"t":"collab"}],"Stoneham":[{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Northeast Arc","n":6,"t":"collab"},{"s":"May Institute","n":3,"t":"private"}],"Wakefield":[{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Northeast Arc","n":6,"t":"collab"},{"s":"May Institute","n":3,"t":"private"}],"Somerville":[{"s":"LABBB Collaborative","n":38,"t":"collab"},{"s":"Cotting School","n":3,"t":"private"},{"s":"May Institute","n":10,"t":"private"},{"s":"Perkins School for the Blind","n":5,"t":"private"},{"s":"Northeast Arc","n":6,"t":"collab"}],"Medford":[{"s":"LABBB Collaborative","n":36,"t":"collab"},{"s":"Cotting School","n":3,"t":"private"},{"s":"May Institute","n":8,"t":"private"},{"s":"Northeast Arc","n":6,"t":"collab"}],"Malden":[{"s":"LABBB Collaborative","n":40,"t":"collab"},{"s":"Cotting School","n":3,"t":"private"},{"s":"May Institute","n":10,"t":"private"},{"s":"Northeast Arc","n":8,"t":"collab"}],"Winchester":[{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Perkins School for the Blind","n":2,"t":"private"}],"Melrose":[{"s":"LABBB Collaborative","n":20,"t":"collab"},{"s":"Northeast Arc","n":8,"t":"collab"},{"s":"May Institute","n":4,"t":"private"}],"Sudbury":[{"s":"LABBB Collaborative","n":14,"t":"collab"},{"s":"Minute Man Arc","n":6,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"}],"Watertown":[{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":4,"t":"private"},{"s":"Perkins School for the Blind","n":2,"t":"private"}],"Newton":[{"s":"LABBB Collaborative","n":60,"t":"collab"},{"s":"Cotting School","n":5,"t":"private"},{"s":"Perkins School for the Blind","n":8,"t":"private"},{"s":"May Institute","n":12,"t":"private"},{"s":"Gifford School","n":4,"t":"private"}],"Wayland":[{"s":"LABBB Collaborative","n":12,"t":"collab"},{"s":"Minute Man Arc","n":4,"t":"collab"},{"s":"Cotting School","n":1,"t":"private"}],"Weston":[{"s":"LABBB Collaborative","n":10,"t":"collab"},{"s":"Minute Man Arc","n":3,"t":"collab"},{"s":"Perkins School for the Blind","n":2,"t":"private"}],"North Reading":[{"s":"LABBB Collaborative","n":14,"t":"collab"},{"s":"Northeast Arc","n":6,"t":"collab"},{"s":"May Institute","n":3,"t":"private"}],"Westford":[{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Northeast Arc","n":6,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"}],"Chelmsford":[{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"Northeast Arc","n":8,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Lighthouse School","n":4,"t":"private"}],"Tewksbury":[{"s":"Northeast Arc","n":20,"t":"collab"},{"s":"LABBB Collaborative","n":14,"t":"collab"},{"s":"May Institute","n":5,"t":"private"}],"Wilmington":[{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Northeast Arc","n":8,"t":"collab"},{"s":"May Institute","n":4,"t":"private"}],"Everett":[{"s":"LABBB Collaborative","n":40,"t":"collab"},{"s":"Northeast Arc","n":18,"t":"collab"},{"s":"May Institute","n":12,"t":"private"},{"s":"Cotting School","n":3,"t":"private"},{"s":"Kennedy-Donovan Center","n":6,"t":"private"}],"Framingham":[{"s":"LABBB Collaborative","n":56,"t":"collab"},{"s":"Cotting School","n":4,"t":"private"},{"s":"May Institute","n":14,"t":"private"},{"s":"Perkins School for the Blind","n":5,"t":"private"},{"s":"Minute Man Arc","n":8,"t":"collab"}],"Natick":[{"s":"LABBB Collaborative","n":24,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":6,"t":"private"},{"s":"Minute Man Arc","n":4,"t":"collab"}],"Lowell":[{"s":"Northeast Arc","n":68,"t":"collab"},{"s":"LABBB Collaborative","n":38,"t":"collab"},{"s":"May Institute","n":22,"t":"private"},{"s":"Cotting School","n":4,"t":"private"},{"s":"Lighthouse School","n":12,"t":"private"},{"s":"Kennedy-Donovan Center","n":8,"t":"private"}],"Marlborough":[{"s":"LABBB Collaborative","n":28,"t":"collab"},{"s":"May Institute","n":8,"t":"private"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Minute Man Arc","n":6,"t":"collab"}],"Hopkinton":[{"s":"LABBB Collaborative","n":16,"t":"collab"},{"s":"Minute Man Arc","n":5,"t":"collab"},{"s":"Cotting School","n":1,"t":"private"}],"Brookline":[{"s":"LABBB Collaborative","n":44,"t":"collab"},{"s":"Cotting School","n":4,"t":"private"},{"s":"Perkins School for the Blind","n":8,"t":"private"},{"s":"May Institute","n":10,"t":"private"},{"s":"Gifford School","n":4,"t":"private"}],"Needham":[{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Perkins School for the Blind","n":3,"t":"private"},{"s":"May Institute","n":4,"t":"private"}],"Wellesley":[{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Perkins School for the Blind","n":3,"t":"private"},{"s":"May Institute","n":4,"t":"private"}],"Dedham":[{"s":"LABBB Collaborative","n":20,"t":"collab"},{"s":"South Shore Ed. Collaborative","n":8,"t":"collab"},{"s":"May Institute","n":5,"t":"private"}],"Milton":[{"s":"South Shore Ed. Collaborative","n":18,"t":"collab"},{"s":"LABBB Collaborative","n":16,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":5,"t":"private"}],"Quincy":[{"s":"South Shore Ed. Collaborative","n":44,"t":"collab"},{"s":"LABBB Collaborative","n":20,"t":"collab"},{"s":"Cotting School","n":3,"t":"private"},{"s":"May Institute","n":10,"t":"private"}],"Braintree":[{"s":"South Shore Ed. Collaborative","n":30,"t":"collab"},{"s":"LABBB Collaborative","n":14,"t":"collab"},{"s":"May Institute","n":8,"t":"private"},{"s":"Cotting School","n":2,"t":"private"}],"Stoughton":[{"s":"South Shore Ed. Collaborative","n":28,"t":"collab"},{"s":"LABBB Collaborative","n":16,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":8,"t":"private"}],"Canton":[{"s":"South Shore Ed. Collaborative","n":16,"t":"collab"},{"s":"LABBB Collaborative","n":12,"t":"collab"},{"s":"May Institute","n":5,"t":"private"}],"Randolph":[{"s":"South Shore Ed. Collaborative","n":30,"t":"collab"},{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"May Institute","n":10,"t":"private"},{"s":"Cotting School","n":2,"t":"private"}],"Boston":[{"s":"LABBB Collaborative","n":180,"t":"collab"},{"s":"Northeast Arc","n":80,"t":"collab"},{"s":"Cotting School","n":8,"t":"private"},{"s":"Perkins School for the Blind","n":20,"t":"private"},{"s":"May Institute","n":40,"t":"private"},{"s":"Kennedy-Donovan Center","n":15,"t":"private"},{"s":"Judge Rotenberg Center","n":8,"t":"private"}],"Chelsea":[{"s":"LABBB Collaborative","n":44,"t":"collab"},{"s":"Northeast Arc","n":22,"t":"collab"},{"s":"May Institute","n":14,"t":"private"},{"s":"Cotting School","n":3,"t":"private"},{"s":"Kennedy-Donovan Center","n":8,"t":"private"}],"Revere":[{"s":"LABBB Collaborative","n":48,"t":"collab"},{"s":"Northeast Arc","n":24,"t":"collab"},{"s":"May Institute","n":14,"t":"private"},{"s":"Cotting School","n":3,"t":"private"}],"Lynn":[{"s":"Northeast Arc","n":72,"t":"collab"},{"s":"LABBB Collaborative","n":40,"t":"collab"},{"s":"May Institute","n":20,"t":"private"},{"s":"Cotting School","n":4,"t":"private"},{"s":"Kennedy-Donovan Center","n":12,"t":"private"},{"s":"Lighthouse School","n":8,"t":"private"}],"Peabody":[{"s":"Northeast Arc","n":34,"t":"collab"},{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":8,"t":"private"}],"Salem":[{"s":"Northeast Arc","n":30,"t":"collab"},{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":8,"t":"private"}],"Beverly":[{"s":"Northeast Arc","n":28,"t":"collab"},{"s":"LABBB Collaborative","n":14,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":6,"t":"private"}],"Andover":[{"s":"Northeast Arc","n":26,"t":"collab"},{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":6,"t":"private"}],"North Andover":[{"s":"Northeast Arc","n":22,"t":"collab"},{"s":"LABBB Collaborative","n":14,"t":"collab"},{"s":"Cotting School","n":2,"t":"private"},{"s":"May Institute","n":5,"t":"private"}],"Lawrence":[{"s":"Northeast Arc","n":62,"t":"collab"},{"s":"LABBB Collaborative","n":32,"t":"collab"},{"s":"Kennedy-Donovan Center","n":14,"t":"private"},{"s":"May Institute","n":18,"t":"private"},{"s":"Cotting School","n":3,"t":"private"},{"s":"Lighthouse School","n":8,"t":"private"}],"Methuen":[{"s":"Northeast Arc","n":38,"t":"collab"},{"s":"LABBB Collaborative","n":20,"t":"collab"},{"s":"May Institute","n":10,"t":"private"},{"s":"Cotting School","n":2,"t":"private"}],"Haverhill":[{"s":"Northeast Arc","n":40,"t":"collab"},{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"May Institute","n":12,"t":"private"},{"s":"Cotting School","n":2,"t":"private"},{"s":"Lighthouse School","n":6,"t":"private"}],"Hamilton-Wenham":[{"s":"Northeast Arc","n":10,"t":"collab"},{"s":"LABBB Collaborative","n":6,"t":"collab"},{"s":"Cotting School","n":1,"t":"private"}],"Southborough":[{"s":"LABBB Collaborative","n":10,"t":"collab"},{"s":"Minute Man Arc","n":4,"t":"collab"},{"s":"Cotting School","n":1,"t":"private"}],"Northborough":[{"s":"LABBB Collaborative","n":12,"t":"collab"},{"s":"Minute Man Arc","n":5,"t":"collab"},{"s":"May Institute","n":3,"t":"private"}],"Westborough":[{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"Minute Man Arc","n":6,"t":"collab"},{"s":"May Institute","n":4,"t":"private"}],"Shrewsbury":[{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"Minute Man Arc","n":8,"t":"collab"},{"s":"May Institute","n":5,"t":"private"},{"s":"Cotting School","n":1,"t":"private"}],"Milford":[{"s":"LABBB Collaborative","n":20,"t":"collab"},{"s":"Minute Man Arc","n":8,"t":"collab"},{"s":"May Institute","n":6,"t":"private"}],"Leominster":[{"s":"Northeast Arc","n":36,"t":"collab"},{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"May Institute","n":12,"t":"private"},{"s":"Lighthouse School","n":6,"t":"private"},{"s":"Cotting School","n":2,"t":"private"}],"Fitchburg":[{"s":"Northeast Arc","n":40,"t":"collab"},{"s":"LABBB Collaborative","n":22,"t":"collab"},{"s":"May Institute","n":14,"t":"private"},{"s":"Lighthouse School","n":8,"t":"private"},{"s":"Cotting School","n":2,"t":"private"}],"Worcester":[{"s":"LABBB Collaborative","n":92,"t":"collab"},{"s":"Northeast Arc","n":60,"t":"collab"},{"s":"May Institute","n":40,"t":"private"},{"s":"Cotting School","n":5,"t":"private"},{"s":"Kennedy-Donovan Center","n":18,"t":"private"},{"s":"Lighthouse School","n":14,"t":"private"},{"s":"Judge Rotenberg Center","n":6,"t":"private"}],"Hingham":[{"s":"South Shore Ed. Collaborative","n":18,"t":"collab"},{"s":"LABBB Collaborative","n":8,"t":"collab"},{"s":"May Institute","n":4,"t":"private"}],"Norwell":[{"s":"South Shore Ed. Collaborative","n":10,"t":"collab"},{"s":"LABBB Collaborative","n":6,"t":"collab"},{"s":"Cotting School","n":1,"t":"private"}],"Whitman-Hanson":[{"s":"South Shore Ed. Collaborative","n":22,"t":"collab"},{"s":"LABBB Collaborative","n":10,"t":"collab"},{"s":"Cotting School","n":1,"t":"private"},{"s":"May Institute","n":5,"t":"private"}],"Plymouth":[{"s":"South Shore Ed. Collaborative","n":50,"t":"collab"},{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"May Institute","n":14,"t":"private"},{"s":"Cotting School","n":1,"t":"private"}],"Attleboro":[{"s":"South Shore Ed. Collaborative","n":36,"t":"collab"},{"s":"LABBB Collaborative","n":18,"t":"collab"},{"s":"May Institute","n":10,"t":"private"},{"s":"Cotting School","n":1,"t":"private"}],"Taunton":[{"s":"South Shore Ed. Collaborative","n":48,"t":"collab"},{"s":"LABBB Collaborative","n":20,"t":"collab"},{"s":"May Institute","n":14,"t":"private"},{"s":"Kennedy-Donovan Center","n":8,"t":"private"}],"Nashua":[{"s":"Nashua Area Collaborative","n":62,"t":"collab"},{"s":"May Institute","n":12,"t":"private"},{"s":"Cotting School","n":1,"t":"private"},{"s":"Manchester School District","n":8,"t":"public"}],"Manchester":[{"s":"NH Div. of Special Ed.","n":64,"t":"collab"},{"s":"May Institute","n":14,"t":"private"},{"s":"Cotting School","n":1,"t":"private"},{"s":"Granite State Independent Living","n":8,"t":"private"}],"Salem NH":[{"s":"Rockingham County Collab.","n":28,"t":"collab"},{"s":"Northeast Arc","n":8,"t":"collab"},{"s":"May Institute","n":6,"t":"private"}],"Derry":[{"s":"Rockingham County Collab.","n":24,"t":"collab"},{"s":"Northeast Arc","n":8,"t":"collab"},{"s":"May Institute","n":5,"t":"private"}],"Pawtucket":[{"s":"RI Collaborative","n":40,"t":"collab"},{"s":"May Institute","n":12,"t":"private"},{"s":"Kennedy-Donovan Center","n":6,"t":"private"},{"s":"Cotting School","n":2,"t":"private"}],"Woonsocket":[{"s":"RI Collaborative","n":36,"t":"collab"},{"s":"May Institute","n":10,"t":"private"},{"s":"Kennedy-Donovan Center","n":5,"t":"private"}]};
+const D=[
+{n:"Lexington",st:"MA",co:"Middlesex",drive:5,enr:7200,budget:142,blk:2,lat:4,li:8,sp:18,osp:8.2,obp:2.8,lp:38,pi:38},
+{n:"Arlington",st:"MA",co:"Middlesex",drive:10,enr:5600,budget:112,blk:4,lat:7,li:11,sp:19,osp:11.4,obp:3.6,lp:62,pi:28},
+{n:"Belmont",st:"MA",co:"Middlesex",drive:12,enr:4200,budget:91,blk:2,lat:4,li:7,sp:17,osp:9.1,obp:3.0,lp:44,pi:19},
+{n:"Bedford",st:"MA",co:"Middlesex",drive:12,enr:3700,budget:78,blk:2,lat:4,li:6,sp:17,osp:9.8,obp:3.2,lp:39,pi:14},
+{n:"Burlington",st:"MA",co:"Middlesex",drive:14,enr:4500,budget:92,blk:3,lat:7,li:10,sp:20,osp:12.2,obp:3.8,lp:55,pi:22},
+{n:"Concord",st:"MA",co:"Middlesex",drive:15,enr:5100,budget:108,blk:2,lat:5,li:9,sp:18,osp:9.5,obp:3.1,lp:48,pi:26},
+{n:"Waltham",st:"MA",co:"Middlesex",drive:15,enr:7900,budget:152,blk:7,lat:22,li:29,sp:21,osp:13.8,obp:4.4,lp:71,pi:41},
+{n:"Woburn",st:"MA",co:"Middlesex",drive:15,enr:5400,budget:103,blk:4,lat:13,li:22,sp:20,osp:13.1,obp:4.0,lp:66,pi:24},
+{n:"Acton-Boxborough",st:"MA",co:"Middlesex",drive:18,enr:5800,budget:122,blk:2,lat:5,li:7,sp:18,osp:9.2,obp:2.9,lp:42,pi:22},
+{n:"Billerica",st:"MA",co:"Middlesex",drive:18,enr:5900,budget:112,blk:3,lat:8,li:16,sp:20,osp:12.8,obp:3.9,lp:58,pi:26},
+{n:"Cambridge",st:"MA",co:"Middlesex",drive:18,enr:7100,budget:195,blk:18,lat:21,li:35,sp:22,osp:14.6,obp:4.8,lp:95,pi:46},
+{n:"Reading",st:"MA",co:"Middlesex",drive:18,enr:4800,budget:96,blk:2,lat:4,li:8,sp:18,osp:10.2,obp:3.2,lp:44,pi:18},
+{n:"Stoneham",st:"MA",co:"Middlesex",drive:18,enr:3600,budget:71,blk:4,lat:10,li:14,sp:19,osp:11.8,obp:3.7,lp:52,pi:15},
+{n:"Wakefield",st:"MA",co:"Middlesex",drive:18,enr:4100,budget:82,blk:2,lat:7,li:12,sp:19,osp:11.2,obp:3.5,lp:48,pi:16},
+{n:"Somerville",st:"MA",co:"Middlesex",drive:20,enr:5800,budget:132,blk:12,lat:29,li:42,sp:21,osp:15.9,obp:4.9,lp:88,pi:32},
+{n:"Medford",st:"MA",co:"Middlesex",drive:20,enr:6200,budget:121,blk:11,lat:17,li:27,sp:20,osp:14.2,obp:4.4,lp:74,pi:30},
+{n:"Malden",st:"MA",co:"Middlesex",drive:20,enr:7100,budget:130,blk:19,lat:20,li:45,sp:21,osp:16.8,obp:5.2,lp:92,pi:34},
+{n:"Winchester",st:"MA",co:"Middlesex",drive:20,enr:4200,budget:90,blk:2,lat:4,li:7,sp:17,osp:8.8,obp:2.8,lp:38,pi:16},
+{n:"Melrose",st:"MA",co:"Middlesex",drive:20,enr:4300,budget:86,blk:3,lat:7,li:11,sp:19,osp:11.4,obp:3.5,lp:50,pi:17},
+{n:"Sudbury",st:"MA",co:"Middlesex",drive:22,enr:3800,budget:84,blk:1,lat:3,li:4,sp:17,osp:8.4,obp:2.7,lp:36,pi:14},
+{n:"Watertown",st:"MA",co:"Middlesex",drive:22,enr:4400,budget:96,blk:5,lat:10,li:16,sp:19,osp:11.8,obp:3.6,lp:56,pi:20},
+{n:"Newton",st:"MA",co:"Middlesex",drive:22,enr:13000,budget:295,blk:5,lat:7,li:11,sp:19,osp:10.8,obp:3.8,lp:72,pi:68},
+{n:"Wayland",st:"MA",co:"Middlesex",drive:22,enr:2900,budget:64,blk:2,lat:3,li:5,sp:17,osp:8.6,obp:2.8,lp:36,pi:11},
+{n:"Weston",st:"MA",co:"Middlesex",drive:22,enr:2400,budget:60,blk:2,lat:3,li:4,sp:17,osp:8.0,obp:2.9,lp:34,pi:9},
+{n:"North Reading",st:"MA",co:"Middlesex",drive:22,enr:3100,budget:62,blk:1,lat:4,li:8,sp:18,osp:10.4,obp:3.3,lp:44,pi:12},
+{n:"Westford",st:"MA",co:"Middlesex",drive:25,enr:5400,budget:114,blk:2,lat:5,li:7,sp:18,osp:9.6,obp:3.0,lp:44,pi:20},
+{n:"Chelmsford",st:"MA",co:"Middlesex",drive:25,enr:6200,budget:124,blk:3,lat:6,li:10,sp:19,osp:11.0,obp:3.4,lp:50,pi:26},
+{n:"Tewksbury",st:"MA",co:"Middlesex",drive:25,enr:4800,budget:92,blk:2,lat:7,li:14,sp:20,osp:12.4,obp:3.8,lp:54,pi:20},
+{n:"Wilmington",st:"MA",co:"Middlesex",drive:25,enr:4200,budget:83,blk:2,lat:5,li:10,sp:19,osp:11.2,obp:3.5,lp:48,pi:17},
+{n:"Everett",st:"MA",co:"Middlesex",drive:25,enr:8200,budget:148,blk:18,lat:38,li:62,sp:22,osp:18.2,obp:6.1,lp:108,pi:38},
+{n:"Framingham",st:"MA",co:"Middlesex",drive:25,enr:10800,budget:212,blk:9,lat:34,li:42,sp:21,osp:15.2,obp:4.9,lp:88,pi:50},
+{n:"Natick",st:"MA",co:"Middlesex",drive:25,enr:5600,budget:116,blk:4,lat:8,li:12,sp:19,osp:11.4,obp:3.5,lp:52,pi:22},
+{n:"Lowell",st:"MA",co:"Middlesex",drive:28,enr:15200,budget:265,blk:9,lat:31,li:71,sp:22,osp:18.9,obp:6.4,lp:112,pi:70},
+{n:"Marlborough",st:"MA",co:"Middlesex",drive:28,enr:5200,budget:98,blk:5,lat:23,li:30,sp:21,osp:14.4,obp:4.5,lp:72,pi:24},
+{n:"Hopkinton",st:"MA",co:"Middlesex",drive:28,enr:3900,budget:82,blk:2,lat:5,li:7,sp:18,osp:9.4,obp:3.0,lp:40,pi:14},
+{n:"Brookline",st:"MA",co:"Norfolk",drive:22,enr:7800,budget:196,blk:6,lat:8,li:13,sp:20,osp:11.6,obp:4.2,lp:84,pi:44},
+{n:"Needham",st:"MA",co:"Norfolk",drive:25,enr:5200,budget:112,blk:2,lat:4,li:7,sp:18,osp:9.2,obp:3.0,lp:42,pi:20},
+{n:"Wellesley",st:"MA",co:"Norfolk",drive:28,enr:5600,budget:119,blk:3,lat:4,li:5,sp:18,osp:8.8,obp:2.9,lp:42,pi:22},
+{n:"Dedham",st:"MA",co:"Norfolk",drive:28,enr:4100,budget:82,blk:8,lat:10,li:18,sp:20,osp:12.4,obp:3.8,lp:56,pi:17},
+{n:"Milton",st:"MA",co:"Norfolk",drive:30,enr:4800,budget:100,blk:14,lat:6,li:12,sp:19,osp:11.8,obp:3.6,lp:56,pi:20},
+{n:"Quincy",st:"MA",co:"Norfolk",drive:30,enr:10200,budget:194,blk:6,lat:8,li:28,sp:20,osp:13.4,obp:4.2,lp:68,pi:44},
+{n:"Braintree",st:"MA",co:"Norfolk",drive:35,enr:6400,budget:122,blk:5,lat:9,li:16,sp:20,osp:12.6,obp:3.8,lp:56,pi:26},
+{n:"Stoughton",st:"MA",co:"Norfolk",drive:38,enr:5400,budget:98,blk:24,lat:11,li:30,sp:21,osp:14.8,obp:4.5,lp:72,pi:24},
+{n:"Canton",st:"MA",co:"Norfolk",drive:35,enr:3800,budget:78,blk:5,lat:5,li:9,sp:19,osp:10.8,obp:3.3,lp:46,pi:15},
+{n:"Randolph",st:"MA",co:"Norfolk",drive:35,enr:5600,budget:102,blk:38,lat:14,li:42,sp:21,osp:16.2,obp:5.1,lp:88,pi:24},
+{n:"Boston",st:"MA",co:"Suffolk",drive:25,enr:47000,budget:1250,blk:35,lat:39,li:67,sp:22,osp:17.4,obp:5.8,lp:134,pi:220},
+{n:"Chelsea",st:"MA",co:"Suffolk",drive:25,enr:6900,budget:124,blk:12,lat:69,li:78,sp:21,osp:19.1,obp:6.3,lp:118,pi:31},
+{n:"Revere",st:"MA",co:"Suffolk",drive:28,enr:8600,budget:158,blk:6,lat:47,li:56,sp:22,osp:16.8,obp:5.3,lp:98,pi:38},
+{n:"Lynn",st:"MA",co:"Essex",drive:28,enr:14400,budget:238,blk:14,lat:54,li:79,sp:23,osp:21.2,obp:7.1,lp:128,pi:66},
+{n:"Peabody",st:"MA",co:"Essex",drive:28,enr:6600,budget:126,blk:4,lat:19,li:28,sp:20,osp:13.8,obp:4.3,lp:64,pi:27},
+{n:"Salem",st:"MA",co:"Essex",drive:30,enr:5600,budget:108,blk:7,lat:34,li:44,sp:21,osp:15.2,obp:4.7,lp:78,pi:24},
+{n:"Beverly",st:"MA",co:"Essex",drive:35,enr:5400,budget:108,blk:4,lat:9,li:16,sp:19,osp:11.8,obp:3.6,lp:52,pi:20},
+{n:"Andover",st:"MA",co:"Essex",drive:35,enr:7100,budget:142,blk:2,lat:5,li:8,sp:18,osp:9.4,obp:3.1,lp:48,pi:26},
+{n:"North Andover",st:"MA",co:"Essex",drive:35,enr:5800,budget:118,blk:2,lat:5,li:8,sp:18,osp:10.1,obp:3.2,lp:50,pi:21},
+{n:"Lawrence",st:"MA",co:"Essex",drive:35,enr:13800,budget:238,blk:5,lat:82,li:84,sp:23,osp:20.4,obp:6.8,lp:124,pi:62},
+{n:"Methuen",st:"MA",co:"Essex",drive:38,enr:7200,budget:132,blk:5,lat:37,li:48,sp:21,osp:16.4,obp:5.2,lp:88,pi:31},
+{n:"Haverhill",st:"MA",co:"Essex",drive:45,enr:8400,budget:152,blk:5,lat:42,li:55,sp:22,osp:17.6,obp:5.6,lp:96,pi:36},
+{n:"Hamilton-Wenham",st:"MA",co:"Essex",drive:40,enr:2400,budget:52,blk:2,lat:4,li:7,sp:17,osp:9.0,obp:2.9,lp:38,pi:9},
+{n:"Southborough",st:"MA",co:"Worcester",drive:32,enr:2400,budget:52,blk:2,lat:4,li:6,sp:17,osp:8.8,obp:2.8,lp:36,pi:9},
+{n:"Northborough",st:"MA",co:"Worcester",drive:35,enr:3600,budget:74,blk:2,lat:5,li:8,sp:18,osp:9.8,obp:3.1,lp:42,pi:13},
+{n:"Westborough",st:"MA",co:"Worcester",drive:35,enr:4600,budget:94,blk:4,lat:8,li:10,sp:19,osp:10.4,obp:3.2,lp:46,pi:18},
+{n:"Shrewsbury",st:"MA",co:"Worcester",drive:38,enr:7200,budget:144,blk:4,lat:8,li:10,sp:19,osp:10.8,obp:3.4,lp:48,pi:28},
+{n:"Milford",st:"MA",co:"Worcester",drive:40,enr:4800,budget:90,blk:4,lat:20,li:24,sp:20,osp:13.2,obp:4.1,lp:62,pi:19},
+{n:"Leominster",st:"MA",co:"Worcester",drive:45,enr:7600,budget:136,blk:6,lat:30,li:44,sp:22,osp:16.8,obp:5.4,lp:86,pi:33},
+{n:"Fitchburg",st:"MA",co:"Worcester",drive:48,enr:6200,budget:108,blk:8,lat:38,li:58,sp:23,osp:19.4,obp:6.4,lp:102,pi:28},
+{n:"Worcester",st:"MA",co:"Worcester",drive:50,enr:24500,budget:418,blk:14,lat:44,li:73,sp:24,osp:22.1,obp:7.4,lp:138,pi:112},
+{n:"Hingham",st:"MA",co:"Plymouth",drive:42,enr:5400,budget:114,blk:2,lat:3,li:5,sp:17,osp:8.4,obp:2.7,lp:36,pi:18},
+{n:"Norwell",st:"MA",co:"Plymouth",drive:45,enr:2600,budget:56,blk:1,lat:3,li:5,sp:17,osp:8.8,obp:2.8,lp:36,pi:9},
+{n:"Whitman-Hanson",st:"MA",co:"Plymouth",drive:45,enr:5200,budget:98,blk:4,lat:7,li:18,sp:20,osp:12.6,obp:3.9,lp:56,pi:20},
+{n:"Plymouth",st:"MA",co:"Plymouth",drive:60,enr:9400,budget:172,blk:4,lat:8,li:22,sp:21,osp:14.0,obp:4.5,lp:64,pi:38},
+{n:"Attleboro",st:"MA",co:"Bristol",drive:55,enr:7800,budget:138,blk:8,lat:14,li:32,sp:21,osp:15.0,obp:4.8,lp:74,pi:30},
+{n:"Taunton",st:"MA",co:"Bristol",drive:55,enr:8800,budget:154,blk:12,lat:16,li:40,sp:22,osp:17.2,obp:5.5,lp:90,pi:36},
+{n:"Nashua",st:"NH",co:"Hillsborough",drive:45,enr:13200,budget:218,blk:7,lat:18,li:38,sp:18,osp:13.2,obp:3.8,lp:58,pi:48},
+{n:"Manchester",st:"NH",co:"Hillsborough",drive:50,enr:14200,budget:225,blk:9,lat:17,li:46,sp:19,osp:15.8,obp:4.5,lp:64,pi:54},
+{n:"Salem NH",st:"NH",co:"Rockingham",drive:35,enr:6200,budget:102,blk:3,lat:8,li:18,sp:17,osp:12.4,obp:3.6,lp:46,pi:22},
+{n:"Derry",st:"NH",co:"Rockingham",drive:42,enr:5200,budget:84,blk:3,lat:7,li:20,sp:17,osp:12.8,obp:3.7,lp:48,pi:18},
+{n:"Pawtucket",st:"RI",co:"Providence",drive:52,enr:8600,budget:138,blk:24,lat:44,li:72,sp:20,osp:16.4,obp:5.2,lp:78,pi:33},
+{n:"Woonsocket",st:"RI",co:"Providence",drive:52,enr:7200,budget:114,blk:15,lat:38,li:70,sp:21,osp:17.8,obp:5.6,lp:82,pi:28}
+];
+
+function risk(d){let s=0;if(d.osp>=18)s+=3;else if(d.osp>=14)s+=2;else if(d.osp>=11)s+=1;if(d.lp>=100)s+=2;else if(d.lp>=65)s+=1;if(d.li>=60)s+=2;else if(d.li>=35)s+=1;if(d.sp>=22)s+=1;return s;}
+function rL(s){return s>=5?"H":s>=2?"M":"L";}
+function rc(v,lo,hi){return v>=hi?"fr":v>=lo?"fa":"";}
+function rcc(v){return v>=75000?"fr":v>=55000?"fa":"fg";}
+
+let sk="drive",sa=true;
+function ss(k){if(sk===k)sa=!sa;else{sk=k;sa=false;}document.getElementById("st").value=k;rd();}
+
+function buildProvCell(name){
+  const provs=OOD_P[name];
+  if(!provs||!provs.length) return '<span style="color:var(--tt);font-size:10px">No data</span>';
+  const top=provs.slice(0,2);
+  const rest=provs.slice(2);
+  let html='<div class="prov-chips">';
+  top.forEach(p=>{
+    const cls=p.s==='Cotting School'?'chip-cotting':p.t==='collab'?'chip-collab':p.t==='public'?'chip-public':'chip-private';
+    html+=`<span class="chip ${cls}">${p.s} <span class="chip-n">${p.n}</span></span>`;
+  });
+  if(rest.length){
+    html+=`<span class="chip" style="background:var(--bgt);color:var(--tt);cursor:pointer;font-size:10px" onclick="toggleProv(this,event)">${rest.length} more...</span>`;
+    html+='<span class="prov-more" style="display:none">';
+    rest.forEach(p=>{
+      const cls=p.s==='Cotting School'?'chip-cotting':p.t==='collab'?'chip-collab':p.t==='public'?'chip-public':'chip-private';
+      html+=`<span class="chip ${cls}">${p.s} <span class="chip-n">${p.n}</span></span>`;
+    });
+    html+='</span>';
+  }
+  html+='</div>';
+  return html;
+}
+function toggleProv(btn,e){
+  e.stopPropagation();
+  const more=btn.nextElementSibling;
+  if(more){
+    const vis=more.style.display==='none';
+    more.style.display=vis?'contents':'none';
+    btn.textContent=vis?'less':'+'+(more.querySelectorAll('.chip').length)+' more...';
+  }
+}
+
+function rd(){
+  const q=document.getElementById("q").value.toLowerCase();
+  const sf=document.getElementById("sf").value;
+  const cf=document.getElementById("cf").value;
+  const rf=document.getElementById("rf").value;
+  const s=document.getElementById("st").value||sk;
+  let rows=D.map(d=>{
+    const isP=CP.has(d.n);
+    const sn=Math.round(d.enr*d.sp/100);
+    const osn=Math.round(sn*d.osp/100);
+    const obd=Math.round(d.budget*1e6*d.obp/100);
+    const ocp=osn>0?Math.round(obd/osn):0;
+    return Object.assign({},d,{isP,ce:isP?(CE[d.n]||1):0,cps:Math.round(d.budget*1e6/d.enr),pp:+((d.pi/d.enr)*100).toFixed(2),sn,osn,obd,ocp,rs:risk(d)});
+  }).filter(d=>{
+    if(q&&!d.n.toLowerCase().includes(q)&&!d.co.toLowerCase().includes(q))return false;
+    if(sf&&d.st!==sf)return false;
+    if(cf==="y"&&!d.isP)return false;
+    if(cf==="n"&&d.isP)return false;
+    if(rf&&rL(d.rs)!==rf)return false;
+    return true;
+  }).sort((a,b)=>{
+    const av=s==="n"?a.n:(a[s]||0);
+    const bv=s==="n"?b.n:(b[s]||0);
+    if(typeof av==="string")return sa?av.localeCompare(bv):bv.localeCompare(av);
+    return sa?av-bv:bv-av;
+  });
+  document.getElementById("k0").textContent=rows.length;
+  const ac=rows.length?Math.round(rows.reduce((s,d)=>s+d.ocp,0)/rows.length):0;
+  document.getElementById("k1").textContent=rows.length?"$"+ac.toLocaleString():"-";
+  document.getElementById("k2").textContent=rows.length?(rows.reduce((s,d)=>s+d.osp,0)/rows.length).toFixed(1)+"%":"-";
+  document.getElementById("k3").textContent=rows.length?(rows.reduce((s,d)=>s+d.obp,0)/rows.length).toFixed(1)+"%":"-";
+  document.getElementById("k4").textContent=rows.reduce((s,d)=>s+d.osn,0).toLocaleString();
+  document.getElementById("k5").textContent=rows.filter(d=>rL(d.rs)==="H").length;
+  const rS={H:"fr",M:"fa",L:"fg"};const rN={H:"HIGH",M:"MOD",L:"LOW"};
+  document.getElementById("tb").innerHTML=rows.map(d=>{
+    const rl=rL(d.rs);
+    const cc=d.isP?'<span class="fca">~'+d.ce+'</span>':'<span class="fgp">0-gap</span>';
+    const bm=d.obd>=1e6?"$"+(d.obd/1e6).toFixed(1)+"M":"$"+(d.obd/1e3).toFixed(0)+"K";
+    return'<tr><td title="'+d.n+'">'+d.n+'<div style="font-size:9px;color:var(--tt)">'+d.co+'</div></td><td>'+d.st+'</td><td>'+d.drive+'m</td><td class="sep">'+d.enr.toLocaleString()+'</td><td><span class="'+rc(d.sp,21,23)+'">'+d.sp+'%</span></td><td><span class="fp">'+d.osn+'</span></td><td><span class="'+rc(d.osp,11,16)+'">'+d.osp+'%</span></td><td class="sep"><span class="fc" style="font-size:10px">$'+d.cps.toLocaleString()+'</span></td><td><span class="'+rc(d.obp,3,5)+'">'+d.obp+'%</span></td><td style="font-size:10px;color:var(--tt)">'+bm+'</td><td><span class="'+rcc(d.ocp)+'" style="font-weight:500;font-size:10px">$'+d.ocp.toLocaleString()+'</span></td><td><span class="'+rc(d.lp,65,100)+'">'+d.lp+'</span></td><td class="sep"><span class="fp">'+d.pi+'</span></td><td>'+d.pp+'%</td><td class="sep">'+d.blk+'%</td><td><span class="'+rc(d.lat,30,55)+'">'+d.lat+'%</span></td><td><span class="'+rc(d.li,35,60)+'">'+d.li+'%</span></td><td>'+cc+'</td><td><span class="'+rS[rl]+'" style="font-size:10px;font-weight:500">'+rN[rl]+'</span></td>'+
+'<td class="prov-cell">'+buildProvCell(d.n)+'</td>'+
+'</tr>';
+  }).join("");
+}
+rd();
+</script>
+</body>
+</html>
